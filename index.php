@@ -8,7 +8,11 @@
 <body>
     <h1>Kelola Tugas Proyek</h1>
     <h3>aku bikin siswa</h3>
+<<<<<<< HEAD
     <h1>kjgiehrgilsndgjsf</h1>
     <h1>Contoh Penggunaan HTML</h1>
+=======
+    <h1>raka anjngggg</h1>
+>>>>>>> 3d13af6 (nambahin raka)
 </body>
 </html>
