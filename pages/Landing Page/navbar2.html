@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page ver2</title>
+  <link rel="stylesheet" href="navbar2.css" />
+</head>
+<body>
+  
+  <div class="hero">
+    <h1>Welcome to Landing Page</h1>
+    <p>Isi disini ya!!!</p>
+  </div>
+
+  <div class="bottom-nav" id="bottomNav">
+    <a href="#" class="active">
+      <img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png" alt="home">
+      Beranda
+    </a>
+    <a href="#">
+      <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="struktur">
+      Friends
+    </a>
+    <a href="#">
+      <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="galeri">
+      Galeri
+    </a>
+    <a href="#">
+      <img src="https://cdn-icons-png.flaticon.com/512/9068/9068648.png" alt="forum">
+      Projects
+    </a>
+    <a href="#">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828464.png" alt="tentang">
+      akun
+    </a>
+  </div>
+
+  <script>
+    let lastScroll = 0;
+    const bottomNav = document.getElementById("bottomNav");
+
+    window.addEventListener("scroll", () => {
+      let currentScroll = window.scrollY;
+
+      if (currentScroll > lastScroll) {
+        // Scroll ke bawah -> navbar sembunyi
+        bottomNav.style.transform = "translateY(100%)";
+      } else {
+        // Scroll ke atas -> navbar muncul
+        bottomNav.style.transform = "translateY(0)";
+      }
+
+      lastScroll = currentScroll;
+    });
+  </script>
+</body>
+</html>

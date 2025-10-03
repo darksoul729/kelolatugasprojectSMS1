@@ -1,0 +1,247 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+ :root{
+      --primary:#2563EB;
+      --light:#ffffff;
+      --dark:#111827;
+      --gray:#6b7280;
+      --navy:#0e2c6d;
+    }
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+  }
+
+  body{
+      background:var(--light);
+      color:var(--dark);
+      transition:background 0.3s,color 0.3s; /* buat transisi warna ya gais */
+      min-height:200vh; 
+    }
+
+  nav{
+      width:100%;
+      background:var(--navy);
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:1000;
+      border-bottom:1px solid #0b2254;
+    }
+
+  .navbar{
+      max-width:1100px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:15px 20px;
+      position:relative;
+    }
+
+  .logo{
+      font-size:1.4rem;
+      font-weight:600;
+      color:var(--light); /* putih */
+    }
+
+  .nav-links{
+      display:flex;
+      gap:40px;
+      position:relative;
+    }
+
+  .nav-links a{
+      text-decoration:none;
+      color:var(--light);
+      font-weight:500;
+      padding:5px 0;
+      transition:0.3s;
+    }
+
+  .nav-links a:hover{
+      color:var(--primary);
+    }
+
+    /* garis slide indicator */
+  .indicator{
+      position:absolute;
+      bottom:0;
+      height:3px;
+      background:var(--primary);
+      border-radius:3px;
+      transition:all 0.3s ease;
+    }
+
+    /* kanan navbar */
+  .nav-actions{
+      display:flex;
+      align-items:center;
+      gap:20px;
+    }
+
+  .btn-started{
+      padding:8px 16px;
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-weight:500;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+  .btn-started:hover{
+      background:#1e4fd1;
+    }
+
+    /* Profile dropdown */
+  .profile{
+      position:relative;
+      cursor:pointer;
+    }
+
+  .profile img{
+      width:35px;
+      border-radius:50%;
+    }
+
+  .dropdown{
+      position:absolute;
+      top:45px;
+      right:0;
+      background:var(--light);
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      display:none;
+      flex-direction:column;
+      min-width:150px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+  .dropdown a{
+      padding:10px;
+      text-decoration:none;
+      color:var(--dark);
+      font-size:14px;
+    }
+
+  .dropdown a:hover{
+      background:#f3f4f6;
+    }
+
+    /* dark mode toggle */
+  .toggle-btn{
+      cursor:pointer;
+      font-size:20px;
+      color:var(--light);
+    }
+
+    /* HERO */
+  .hero{
+      margin-top:80px;
+      text-align:center;
+      padding:80px 20px;
+    }
+
+  .hero h1{
+      font-size:2.5rem;
+      margin-bottom:20px;
+    }
+
+  .hero p{
+      font-size:1.1rem;
+      color:var(--gray);
+      margin-bottom:30px;
+    }
+
+  .hero button{
+      padding:12px 25px;
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    /* DARK MODE */
+  body.dark{
+      background:var(--dark);
+      color:var(--light);
+    }
+
+  body.dark nav{
+      background:var(--dark);
+      border-color:#374151;
+    }
+
+  body.dark .nav-links a{
+      color:var(--light);
+    }
+
+  body.dark .dropdown{
+      background:var(--dark);
+      border-color:#374151;
+    }
+
+  body.dark .dropdown a{
+      color:var(--light);
+    }
+
+    body.dark .dropdown a:hover{
+      background:#1f2937;
+    }
+
+    /* Get Started dropdown */
+.get-started {
+  position: relative;
+}
+
+.dropdown-started {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: var(--light);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  min-width: 150px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-started a {
+  padding: 10px;
+  text-decoration: none;
+  color: var(--dark);
+  font-size: 14px;
+}
+
+.dropdown-started a:hover {
+  background: #f3f4f6;
+}
+
+/* Dark mode Get Started dropdown */
+body.dark .dropdown-started {
+  background: var(--dark);
+  border-color: #374151;
+}
+
+body.dark .dropdown-started a {
+  color: var(--light);
+}
+
+body.dark .dropdown-started a:hover {
+  background: #1f2937;
+}
+
+  @media (max-width:768px){
+      .nav-links{
+          display:none;
+      }
+    }
+    

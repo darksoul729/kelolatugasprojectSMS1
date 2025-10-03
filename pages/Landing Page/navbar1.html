@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Landing Page ver1</title>
+  <link rel="stylesheet" href="navbar1.css" />
+</head>
+<body>
+  <nav>
+    
+    <div class="navbar">
+      <div class="logo">Kelola Project</div>
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Contact</a>
+        <div class="indicator"></div>
+      </div>
+
+      <div class="nav-actions">
+        <!-- Get Started dropdown -->
+        <div class="get-started">
+          <button class="btn-started">Get Started</button>
+          <div class="dropdown-started">
+            <a href="#">Sign In</a>
+            <a href="#">Sign Up</a>
+          </div>
+        </div>
+
+        <div class="toggle-btn">☾</div>
+        <div class="profile">
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile">
+          <div class="dropdown">
+            <a href="#">Profile</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Welcome to Project</h1>
+    <p>Isi gambar atau slide disini</p>
+    <button>Explore Now</button>
+  </section>
+
+  <script>
+    // Dropdown Profile toggle
+    const profile = document.querySelector('.profile');
+    const profileDropdown = document.querySelector('.profile .dropdown');
+    profile.addEventListener('click', () => {
+      profileDropdown.style.display = profileDropdown.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Get Started dropdown toggle
+    const startedBtn = document.querySelector('.btn-started');
+    const startedDropdown = document.querySelector('.dropdown-started');
+    startedBtn.addEventListener('click', () => {
+      startedDropdown.style.display = startedDropdown.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Tutup dropdown kalau klik di luar
+    document.addEventListener('click', (e) => {
+      if (!profile.contains(e.target)) {
+        profileDropdown.style.display = 'none';
+      }
+      if (!startedBtn.contains(e.target) && !startedDropdown.contains(e.target)) {
+        startedDropdown.style.display = 'none';
+      }
+    });
+
+    // Dark mode toggle
+    const toggleBtn = document.querySelector('.toggle-btn');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+  </script>
+
+  <script>
+    let lastScroll = 0;
+    const bottomNav = document.getElementById("bottomNav");
+
+    window.addEventListener("scroll", () => {
+      let currentScroll = window.scrollY;
+
+      if (currentScroll > lastScroll) {
+        // Scroll ke bawah -> navbar sembunyi
+        bottomNav.style.transform = "translateY(100%)";
+      } else {
+        // Scroll ke atas -> navbar muncul
+        bottomNav.style.transform = "translateY(0)";
+      }
+
+      lastScroll = currentScroll;
+    });
+  </script>
+</body>
+</html>
