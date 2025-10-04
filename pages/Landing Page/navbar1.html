@@ -3,100 +3,72 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Landing Page ver1</title>
-  <link rel="stylesheet" href="navbar1.css" />
+  <title>Kelola Tugas — Landing</title>
+  <link rel="stylesheet" href="navbar1.css">
 </head>
 <body>
-  <nav>
-    
-    <div class="navbar">
-      <div class="logo">Kelola Project</div>
-      <div class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Services</a>
-        <a href="#">Contact</a>
-        <div class="indicator"></div>
-      </div>
 
-      <div class="nav-actions">
-        <!-- Get Started dropdown -->
-        <div class="get-started">
-          <button class="btn-started">Get Started</button>
-          <div class="dropdown-started">
-            <a href="#">Sign In</a>
-            <a href="#">Sign Up</a>
-          </div>
-        </div>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">Kelola Tugas</div>
+    <nav>
+      <ul>
+        <li><a href="#fitur">Fitur</a></li>
+        <li><a href="#kontak">Kontak</a></li>
+      </ul>
+    </nav>
+    <a href="#mulai" class="btn-nav">Mulai Aplikasi</a>
+  </header>
 
-        <div class="toggle-btn">☾</div>
-        <div class="profile">
-          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profile">
-          <div class="dropdown">
-            <a href="#">Profile</a>
-            <a href="#">Settings</a>
-            <a href="#">Logout</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
-
+  <!-- Hero buat bgian paling dpan -->
   <section class="hero">
-    <h1>Welcome to Project</h1>
-    <p>Isi gambar atau slide disini</p>
-    <button>Explore Now</button>
+    <h1>Fokus Pada Apa Yang Penting</h1>
+    <p>Aplikasi Kelola Tugas berbasis CodeIgniter 4: Simpel, Cepat, dan Efektif
+      untuk melacak setiap daftar pekerjaan Anda, dari pending hingga done.</p>
+    <a href="#coba" class="btn-cta">Coba Sekarang Gratis</a>
   </section>
 
-  <script>
-    // Dropdown Profile toggle
-    const profile = document.querySelector('.profile');
-    const profileDropdown = document.querySelector('.profile .dropdown');
-    profile.addEventListener('click', () => {
-      profileDropdown.style.display = profileDropdown.style.display === 'flex' ? 'none' : 'flex';
-    });
+  <!-- kenapa section -->
+  <section id="fitur" class="fitur">
+    <h2>Kenapa Memilih Kelola Tugas?</h2>
+    <p>Kami menyediakan fitur dasar yang Anda butuhkan tanpa kerumitan yang tidak perlu.</p>
 
-    // Get Started dropdown toggle
-    const startedBtn = document.querySelector('.btn-started');
-    const startedDropdown = document.querySelector('.dropdown-started');
-    startedBtn.addEventListener('click', () => {
-      startedDropdown.style.display = startedDropdown.style.display === 'flex' ? 'none' : 'flex';
-    });
+    <div class="fitur-container">
+      <div class="card merah">
+        <h3>3 Status Tugas Fleksibel</h3>
+        <p>Lacak setiap tahapan pekerjaan: <b>Pending</b> (Merah),
+        <b>Progress</b> (Biru), dan <b>Done</b> (Hijau).</p>
+      </div>
 
-    // Tutup dropdown kalau klik di luar
-    document.addEventListener('click', (e) => {
-      if (!profile.contains(e.target)) {
-        profileDropdown.style.display = 'none';
-      }
-      if (!startedBtn.contains(e.target) && !startedDropdown.contains(e.target)) {
-        startedDropdown.style.display = 'none';
-      }
-    });
+      <div class="card biru">
+        <h3>Manajemen CRUD Penuh</h3>
+        <p>Buat, Baca, Ubah, dan Hapus tugas. Tambahkan <b>deadline</b> agar tidak melewatkan waktu penting.</p>
+      </div>
 
-    // Dark mode toggle
-    const toggleBtn = document.querySelector('.toggle-btn');
-    toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-    });
+      <div class="card hijau">
+        <h3>Dirancang untuk Pelajar/Pemula</h3>
+        <p>Dibangun dengan CodeIgniter 4 sebagai proyek latihan, sehingga mudah dipelajari.</p>
+      </div>
+    </div>
+  </section>
 
-  </script>
 
+  <!-- <footer id="kontak">
+    <p>© 2025 Kelola Tugas</p>
+  </footer> -->
+ <!-- buat hide pas ngescroll -->
   <script>
     let lastScroll = 0;
-    const bottomNav = document.getElementById("bottomNav");
+    const header = document.querySelector(".navbar");
 
     window.addEventListener("scroll", () => {
-      let currentScroll = window.scrollY;
-
-      if (currentScroll > lastScroll) {
-        // Scroll ke bawah -> navbar sembunyi
-        bottomNav.style.transform = "translateY(100%)";
+      let current = window.scrollY;
+      if (current > lastScroll && current > 60) {
+        header.style.transform = "translateY(-100%)";
       } else {
-        // Scroll ke atas -> navbar muncul
-        bottomNav.style.transform = "translateY(0)";
+        header.style.transform = "translateY(0)";
       }
-
-      lastScroll = currentScroll;
+      lastScroll = current;
     });
   </script>
 </body>
