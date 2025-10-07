@@ -43,6 +43,7 @@
 <body class="font-sans bg-gray-50 text-gray-800">
 
   <!-- Navbar -->
+
   <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-md transition-transform duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <!-- Brand -->
@@ -72,6 +73,7 @@
         </svg>
       </button>
     </div>
+
 
     <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden bg-white py-4 px-4 shadow-inner">

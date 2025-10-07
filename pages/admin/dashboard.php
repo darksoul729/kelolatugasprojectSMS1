@@ -8,7 +8,6 @@ if ($_SESSION['role'] !== 'admin') {
 
 include '../../includes/db_config.php';
 
-// Ambil semua project beserta informasi siswa
 $stmt = $pdo->prepare("
     SELECT p.project_id, p.judul, p.deskripsi, p.deadline, p.status, p.created_at,
            u.nama_lengkap AS nama_siswa,
@@ -63,7 +62,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="font-sans bg-gray-100 text-gray-800">
 
-  <!-- Navbar -->
   <header class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
     <h1 class="text-xl font-bold text-gray-800">Dashboard Admin</h1>
     <div class="flex items-center space-x-4">
@@ -72,11 +70,9 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
   </header>
 
-  <!-- Main Content -->
   <main class="container mx-auto px-4 py-8">
     <h2 class="text-2xl font-bold mb-6">Progress Project Siswa</h2>
 
-    <!-- Project Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <?php foreach ($projects as $project): ?>
         <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow border-l-4 border-<?php echo $project['status'] === 'pending' ? 'yellow' : ($project['status'] === 'progress' ? 'blue' : 'green'); ?>-500">
@@ -105,7 +101,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button onclick="openLoadingModal(<?php echo $project['project_id']; ?>)" class="text-biru hover:underline">Lihat Detail →</button>
           </div>
 
-          <!-- Progress Bar -->
           <?php if ($project['total_todos'] > 0): ?>
             <div class="mt-3 w-full bg-gray-200 rounded-full h-2">
               <div class="bg-hijau h-2 rounded-full" style="width: <?php echo ($project['done_todos'] / $project['total_todos']) * 100; ?>%"></div>
@@ -117,7 +112,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </main>
 
 
-  <!-- Logout Modal -->
   <div id="logoutModal" class="fixed inset-0 hidden modal-overlay z-50 flex items-center justify-center">
     <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
       <h3 class="text-lg font-bold mb-4">Konfirmasi Logout</h3>
@@ -129,7 +123,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
   </div>
 
-  <!-- Loading Modal -->
   <div id="loadingModal" class="fixed inset-0 hidden modal-overlay z-50 flex items-center justify-center">
     <div class="bg-white rounded-xl p-8 w-96 shadow-xl text-center">
       <div class="w-16 h-16 mx-auto mb-4 animate-pulse-fast bg-biru rounded-full"></div>
@@ -145,7 +138,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <script>
     let currentProjectId = null;
 
-    // Modal Logout
     function openLogoutModal() {
       document.getElementById('logoutModal').classList.remove('hidden');
     }
@@ -154,9 +146,8 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
       document.getElementById('logoutModal').classList.add('hidden');
     }
 
-    // Modal Loading
     function openLoadingModal(projectId) {
-      currentProjectId = projectId; // Simpan ID project yang diklik
+      currentProjectId = projectId; 
       document.getElementById('loadingModal').classList.remove('hidden');
       simulateLoading();
     }
@@ -170,7 +161,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
           clearInterval(interval);
           setTimeout(() => {
             document.getElementById('loadingModal').classList.add('hidden');
-            // Gunakan ID project yang benar
             window.location.href = `view_project.php?id=${currentProjectId}`;
           }, 500);
         } else {
@@ -181,7 +171,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
       }, 100);
     }
 
-    // Close modals jika klik di luar
     window.onclick = function(event) {
       const logoutModal = document.getElementById('logoutModal');
       const loadingModal = document.getElementById('loadingModal');
