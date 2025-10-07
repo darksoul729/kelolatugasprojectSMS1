@@ -34,6 +34,8 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <h2>Daftar Proyek Kamu</h2>
 
+    <button onclick="window.location.href='add_task.php'" >Tambah Tugas</button>
+
     <?php if (count($projects) > 0): ?>
         <table>
             <tr>
