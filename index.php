@@ -60,11 +60,24 @@
         <a href="#kontak" class="font-medium text-gray-600 hover:text-biru transition">Kontak</a>
       </nav>
 
-      <!-- Desktop Login Button -->
-<div class="hidden md:flex items-center space-x-4">
-  <button class="text-gray-600 hover:text-biru font-medium" onclick="window.location.href='/pages/auth/login.php'">Login</button>
-  <button class="px-5 py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90 transition" onclick="window.location.href='/pages/auth/register.php'">Daftar</button>
+ <div class="hidden md:flex items-center space-x-4">
+  <!-- Tombol Login -->
+  <button
+    type="button"
+    class="text-gray-600 hover:text-biru font-medium"
+    onclick="window.location.href='/routes/web.php?route=auth/login'">
+    Login
+  </button>
+
+  <!-- Tombol Daftar -->
+  <button
+    type="button"
+    class="px-5 py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90 transition"
+    onclick="window.location.href='/routes/web.php?route=auth/register'">
+    Daftar
+  </button>
 </div>
+
 
       <!-- Mobile Menu Button -->
       <button id="menuToggle" class="md:hidden text-gray-600 text-2xl">

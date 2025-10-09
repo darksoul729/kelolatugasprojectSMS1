@@ -1,14 +1,28 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header("Location: /login.php");
-    exit;
-}
+// Ambil route dari URL
+$currentRoute = $_GET['route'] ?? '';
 
-// Periksa $require_role hanya jika variabel tersebut sudah didefinisikan
-if (isset($require_role) && $_SESSION['role'] !== $require_role) {
-    header("Location: /login.php");
-    exit;
+// Abaikan proteksi jika halaman login/register
+$publicRoutes = [
+    'auth/login',
+    'auth/register',
+    'auth/doLogin',
+    'auth/doRegister',
+    'home'
+];
+
+if (!in_array($currentRoute, $publicRoutes)) {
+    // Jika belum login, arahkan ke halaman login
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+        header("Location: ?route=auth/login");
+        exit;
+    }
+
+    // Cek role jika dibutuhkan
+    if (isset($require_role) && $_SESSION['role'] !== $require_role) {
+        header("Location: ?route=auth/login");
+        exit;
+    }
 }
-?>
