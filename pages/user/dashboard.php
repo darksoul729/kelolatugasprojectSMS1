@@ -9,7 +9,8 @@ if ($_SESSION['role'] !== 'siswa') {
 
 $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT * FROM projects WHERE user_id = ?";
+// Ambil semua project milik user
+$sql = "SELECT * FROM projects WHERE user_id = ? ORDER BY created_at DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
 $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -18,46 +19,56 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 20px; }
-        table { border-collapse: collapse; width: 100%; background: #fff; }
-        th, td { border: 1px solid #ddd; padding: 10px; }
-        th { background-color: #f2f2f2; }
-        h1 { color: #333; }
-        a { text-decoration: none; color: red; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Selamat Datang, <?= htmlspecialchars($_SESSION['username']); ?>!</h1>
-    <p>Ini adalah halaman dashboard siswa.</p>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Dashboard Siswa</h1>
+            <a href="../../includes/logout.php" class="text-red-600 hover:underline">Logout</a>
+        </div>
 
-    <h2>Daftar Proyek Kamu</h2>
+        <p class="mb-6 text-gray-700">Selamat datang, <?= htmlspecialchars($_SESSION['username']); ?>!</p>
 
-    <button onclick="window.location.href='add_task.php'" >Tambah Tugas</button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <?php foreach ($projects as $project): ?>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <!-- Judul project sebagai link ke todo_list.php -->
+                    <a href="todo_list.php?project_id=<?= $project['project_id']; ?>" class="text-xl font-bold text-blue-600 hover:underline mb-2 block">
+                        <?= htmlspecialchars($project['judul']); ?>
+                    </a>
+                    
+                    <p class="text-gray-600 mb-2"><?= htmlspecialchars($project['deskripsi']); ?></p>
+                    <div class="flex justify-between text-sm text-gray-500 mb-4">
+                        <span>Deadline: <?= $project['deadline'] ? htmlspecialchars($project['deadline']) : 'Tidak ada'; ?></span>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            <?php if ($project['status'] === 'baru') echo 'bg-yellow-100 text-yellow-800';
+                                  elseif ($project['status'] === 'berjalan') echo 'bg-blue-100 text-blue-800';
+                                  else echo 'bg-green-100 text-green-800'; ?>">
+                            <?= ucfirst($project['status']); ?>
+                        </span>
+                    </div>
 
-    <?php if (count($projects) > 0): ?>
-        <table>
-            <tr>
-                <th>Judul</th>
-                <th>Deskripsi</th>
-                <th>Deadline</th>
-                <th>Status</th>
-            </tr>
-            <?php foreach ($projects as $row): ?>
-            <tr>
-                <td><?= htmlspecialchars($row['judul']); ?></td>
-                <td><?= htmlspecialchars($row['deskripsi']); ?></td>
-                <td><?= htmlspecialchars($row['deadline']); ?></td>
-                <td><?= htmlspecialchars($row['status']); ?></td>
-            </tr>
+                    <!-- Tambahkan tombol untuk ke halaman todo list -->
+                    <div class="flex space-x-3">
+                        <a href="to_do_list.php?project_id=<?= $project['project_id']; ?>" class="text-blue-600 hover:underline text-sm">
+                            ✏️ Kelola To-Do List
+                        </a>
+                        <a href="progress_report.php?project_id=<?= $project['project_id']; ?>" class="text-purple-600 hover:underline text-sm">
+                            📊 Laporan Progress
+                        </a>
+                    </div>
+                </div>
             <?php endforeach; ?>
-        </table>
-    <?php else: ?>
-        <p><em>Tidak ada proyek yang terdaftar.</em></p>
-    <?php endif; ?>
+        </div>
 
-    <br>
-    <a href="../../includes/logout.php">Logout</a>
+        <?php if (empty($projects)): ?>
+            <div class="text-center py-12">
+                <p class="text-gray-500">Belum ada proyek yang terdaftar.</p>
+            </div>
+        <?php endif; ?>
+    </div>
 </body>
 </html>
