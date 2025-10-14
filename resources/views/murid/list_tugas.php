@@ -112,7 +112,7 @@
                                         <a href="?route=tugas/detail&project_id=<?= $p['project_id'] ?>" class="text-primary-blue hover:underline">
                                             Detail
                                         </a>
-                                        <button onclick="openDeleteModal(<?= $p['id'] ?>)" class="text-danger-red hover:underline">
+                                        <button onclick="openDeleteModal(<?= $p['project_id'] ?>)" class="text-danger-red hover:underline">
                                             Hapus
                                         </button>
                                     </div>
@@ -138,7 +138,6 @@
             <div class="text-text-muted">
                 <p class="mb-2"><strong>Nama:</strong> <?= htmlspecialchars($_SESSION['username'] ?? 'User') ?></p>
                 <p class="mb-2"><strong>Role:</strong> <?= htmlspecialchars($_SESSION['role'] ?? 'siswa') ?></p>
-                <p class="mb-2"><strong>Email:</strong> user@example.com</p>
                 <p class="mb-4"><strong>Terdaftar:</strong> <?= date('d M Y') ?></p>
                 <div class="flex justify-end space-x-3">
                     <button onclick="closeProfileModal()" class="px-4 py-2 text-text-dark hover:bg-gray-100 rounded-lg transition">Tutup</button>

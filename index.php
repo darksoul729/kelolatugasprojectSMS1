@@ -94,9 +94,9 @@
         <a href="#fitur" class="block py-2 hover:text-biru font-medium">Fitur</a>
         <a href="#kontak" class="block py-2 hover:text-biru font-medium">Kontak</a>
         <div class="pt-3 flex flex-col space-y-3 border-t border-gray-200">
-          <button class="w-full py-2 text-center border border-biru text-biru rounded-lg hover:bg-blue-50" onclick="window.location.href='/pages/auth/login.php'">Login</button>
+          <button class="w-full py-2 text-center border border-biru text-biru rounded-lg hover:bg-blue-50" onclick="window.location.href='/routes/web.php?route=auth/login'">Login</button>
           <!-- Tombol Daftar hanya muncul di mobile -->
-          <button class="w-full py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90" onclick="window.location.href='/pages/auth/register.php'">Daftar</button>
+          <button class="w-full py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90" onclick="window.location.href='/routes/web.php?route=auth/register'">Daftar</button>
         </div>
       </div>
     </div>

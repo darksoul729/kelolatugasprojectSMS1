@@ -36,7 +36,7 @@ class AuthController {
                 $result = $this->userModel->register($nama_lengkap, $username, $password, 'siswa');
 
                 if ($result['success']) {
-                    // 🔧 FIX: arahkan ke router, bukan root
+                   
                     header("Location: /routes/web.php?route=auth/login&registered=1");
                     exit;
                 } else {
@@ -76,7 +76,6 @@ class AuthController {
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['role'] = $user['role'];
 
-                    // 🔧 FIX: pastikan redirect via router
                     if ($user['role'] === 'siswa') {
                         header("Location: /routes/web.php?route=tugas/list");
                     } else {
@@ -96,7 +95,6 @@ class AuthController {
     public function logout() {
         session_start();
         session_destroy();
-        // 🔧 FIX: arahkan ke router
         header("Location: /routes/web.php?route=auth/login");
         exit;
     }

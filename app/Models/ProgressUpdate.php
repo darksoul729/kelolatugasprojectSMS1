@@ -6,6 +6,11 @@ class ProgressUpdate {
         $this->pdo = $pdo;
     }
 
+    public function deleteByProject($project_id) {
+    $stmt = $this->pdo->prepare("DELETE FROM progress_updates WHERE project_id = ?");
+    $stmt->execute([$project_id]);
+}
+
     public function allByProject($project_id) {
         $stmt = $this->pdo->prepare("SELECT * FROM progress_updates WHERE project_id = ? ORDER BY tanggal_update DESC");
         $stmt->execute([$project_id]);

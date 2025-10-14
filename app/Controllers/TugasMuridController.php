@@ -28,6 +28,7 @@ class TugasMuridController {
         $user_id = $_SESSION['user_id'];
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $tipe_tugas = $_POST['tipe_tugas'] ?? '';
         $deadline = $_POST['deadline'] ?? '';
 
         if (trim($judul) === '' || trim($deskripsi) === '' || trim($deadline) === '') {
@@ -36,10 +37,31 @@ class TugasMuridController {
             exit;
         }
 
-        $this->project->create($user_id, $judul, $deskripsi, $deadline);
+        $this->project->create($user_id, $judul, $deskripsi, $tipe_tugas, $deadline);
         header("Location: ?route=tugas/list");
         exit;
     }
+
+    public function delete() {
+    $project_id = $_GET['project_id'] ?? null;
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if (!$project_id || !$user_id) {
+        header("Location: ?route=tugas/list");
+        exit;
+    }
+
+    // Hapus semua todo dan progress terkait project
+    $this->progress->deleteByProject($project_id);
+    $this->todo->deleteByProject($project_id);
+
+    // Hapus project
+    $this->project->delete($project_id, $user_id);
+
+    header("Location: ?route=tugas/list");
+    exit;
+}
+
 
     // === DETAIL TUGAS ===
   public function detail() {
@@ -51,7 +73,7 @@ class TugasMuridController {
         exit;
     }
 
-    $project = $this->project->findById($project_id, $user_id);
+    $project = $this->project->findById($project_id);
     if (!$project) {
         header("Location: ?route=tugas/list");
         exit;

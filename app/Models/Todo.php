@@ -6,11 +6,12 @@ class Todo {
         $this->pdo = $pdo;
     }
 
-    public function allByProject($project_id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM todo_list WHERE project_id = ? ORDER BY todo_id ASC");
-        $stmt->execute([$project_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+   public function allByProject($project_id) {
+    $stmt = $this->pdo->prepare("SELECT * FROM todo_list WHERE project_id = ?");
+    $stmt->execute([$project_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
     public function create($project_id, $deskripsi, $is_done) {
         $stmt = $this->pdo->prepare("INSERT INTO todo_list (deskripsi, project_id, is_done) VALUES (?, ?, ?)");
@@ -26,4 +27,9 @@ class Todo {
         $stmt = $this->pdo->prepare("DELETE FROM todo_list WHERE todo_id = ? AND project_id = ?");
         return $stmt->execute([$todo_id, $project_id]);
     }
+
+    public function deleteByProject($project_id) {
+    $stmt = $this->pdo->prepare("DELETE FROM todo_list WHERE project_id = ?");
+    $stmt->execute([$project_id]);
+}
 }
