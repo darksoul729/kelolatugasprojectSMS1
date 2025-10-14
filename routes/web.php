@@ -28,7 +28,7 @@ require_once __DIR__ . '/../app/Controllers/GuruController.php';
 // ===== Helper kecil =====
 function safeGetRoute(): string {
     // Ambil route dari query string dengan sanitasi sederhana
-    $r = filter_input(INPUT_GET, 'route', FILTER_SANITIZE_STRING);
+    $r = filter_input(INPUT_GET, 'route');
     return $r ?: 'home';
 }
 

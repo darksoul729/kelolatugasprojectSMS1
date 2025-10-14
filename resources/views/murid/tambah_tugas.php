@@ -70,6 +70,18 @@
                     <textarea name="deskripsi" class="w-full px-4 py-2 border border-border-divider rounded-lg focus:ring-primary-blue focus:border-primary-blue" required></textarea>
                 </div>
 
+                <div class="mb-6">
+                    <label for="tugas" class="block text-text-dark font-medium mb-1">Pilihan Tugas</label>
+                    <select id="tugas" name="tugas">
+                    <option value="Teori">Teori</option>
+                    <option value="Praktikum">Praktikum</option>
+                    <option value="Proyek">Proyek</option>
+                </div>
+
+                <label for="tugas">Pilih Tugas</label>
+                   
+                </select>
+
             
                 <div class="mb-6">
                     <label class="block text-text-dark font-medium mb-1">Deadline</label>

@@ -7,7 +7,7 @@
 const DB_HOST    = '127.0.0.1';
 const DB_NAME    = 'kelola_tugas';
 const DB_USER    = 'root';
-const DB_PASS    = 'root';
+const DB_PASS    = 'tiara123';
 const DB_CHARSET = 'utf8mb4';
 
 $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;

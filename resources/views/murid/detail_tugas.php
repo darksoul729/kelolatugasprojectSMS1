@@ -63,14 +63,11 @@
                 <div>
                     <h3 class="text-lg font-semibold text-text-dark">Deskripsi</h3>
                     <p class="text-text-muted mt-1"><?= nl2br(htmlspecialchars($project['deskripsi'])) ?></p>
-                </div>
+                </div>z
                 <div>
                     <h3 class="text-lg font-semibold text-text-dark">Deadline</h3>
                     <p class="text-warning-orange font-medium mt-1"><?= htmlspecialchars($project['deadline']) ?></p>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-text-dark">Tipe Tugas</h3>
-                    <p class="text-text-muted mt-1"><?= htmlspecialchars($project['tipe_tugas']) ?></p>
             </div>
         </div>
 

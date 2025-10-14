@@ -99,12 +99,15 @@ class AuthController {
         exit;
     }
 
-    // === MIDDLEWARE (ROLE PROTECTION) ===
-    public function requireRole($role) {
+  public function requireRole($role) {
+    if (session_status() === PHP_SESSION_NONE) {
         session_start();
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== $role) {
-            header("Location: /routes/web.php?route=auth/login");
-            exit;
-        }
     }
+
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== $role) {
+        header("Location: /routes/web.php?route=auth/login");
+        exit;
+    }
+}
+
 }
