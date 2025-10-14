@@ -19,9 +19,9 @@ public function findById($id) {
 }
 
 
-    public function create($user_id, $judul, $deskripsi, $tipe_tugas,$deadline) {
-        $stmt = $this->pdo->prepare("INSERT INTO projects (user_id, judul, deskripsi, tipe_tugas, deadline) VALUES (?, ?, ?, ?)");
-        return $stmt->execute([$user_id, $judul, $deskripsi, $tipe_tugas, $deadline]);
+    public function create($user_id, $judul, $deskripsi, $deadline, $tipe_tugas) {
+        $stmt = $this->pdo->prepare("INSERT INTO projects (user_id, judul, deskripsi, deadline, tipe_tugas) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$user_id, $judul, $deskripsi, $deadline, $tipe_tugas]);
     }
 
 

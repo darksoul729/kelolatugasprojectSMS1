@@ -70,10 +70,12 @@
                     <textarea name="deskripsi" class="w-full px-4 py-2 border border-border-divider rounded-lg focus:ring-primary-blue focus:border-primary-blue" required></textarea>
                 </div>
 
+            
                 <div class="mb-6">
                     <label class="block text-text-dark font-medium mb-1">Deadline</label>
                     <input type="date" name="deadline" class="w-full px-4 py-2 border border-border-divider rounded-lg focus:ring-primary-blue focus:border-primary-blue" required>
                 </div>
+                
 
                 <div class="flex justify-end space-x-3">
                     <a href="?route=tugas/list" class="px-4 py-2 text-text-dark hover:bg-gray-100 rounded-lg transition">

@@ -28,8 +28,9 @@ class TugasMuridController {
         $user_id = $_SESSION['user_id'];
         $judul = $_POST['judul'] ?? '';
         $deskripsi = $_POST['deskripsi'] ?? '';
-        $tipe_tugas = $_POST['tipe_tugas'] ?? '';
         $deadline = $_POST['deadline'] ?? '';
+        $tipe_tugas = $_POST['tipe_tugas'] ?? '';
+
 
         if (trim($judul) === '' || trim($deskripsi) === '' || trim($deadline) === '') {
             $_SESSION['error'] = 'Semua kolom wajib diisi.';
@@ -37,7 +38,8 @@ class TugasMuridController {
             exit;
         }
 
-        $this->project->create($user_id, $judul, $deskripsi, $tipe_tugas, $deadline);
+        $this->project->create($user_id, $judul, $deskripsi, $deadline, $tipe_tugas);
+         // --- IGNORE ---z
         header("Location: ?route=tugas/list");
         exit;
     }
