@@ -108,6 +108,8 @@
                                     <span class="text-warning-orange font-semibold">
                                         Deadline: <?= htmlspecialchars($p['deadline']) ?>
                                     </span>
+                                    <span class="text-text-muted">
+                                        Tipe: <?= htmlspecialchars($p['tipe_tugas']) ?>
                                     <div class="flex space-x-2">
                                         <a href="?route=tugas/detail&project_id=<?= $p['project_id'] ?>" class="text-primary-blue hover:underline">
                                             Detail
