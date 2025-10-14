@@ -71,8 +71,8 @@
                 </div>
 
                 <div class="mb-6">
-                    <label for="tugas" class="block text-text-dark font-medium mb-1">Pilihan Tugas</label>
-                    <select id="tugas" name="tugas">
+                    <label for="tipe_tugas" class="block text-text-dark font-medium mb-1">Pilihan Tugas</label>
+                    <select id="tipe_tugas" name="tipe_tugas">
                     <option value="Teori">Teori</option>
                     <option value="Praktikum">Praktikum</option>
                     <option value="Proyek">Proyek</option>
