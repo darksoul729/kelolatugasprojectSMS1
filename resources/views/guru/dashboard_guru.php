@@ -1,14 +1,5 @@
 <?php
-session_start();
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['user'])) {
-    header("Location: /index.php");
-    exit;
-}
-
-// Ambil data user dari session
-$user = $_SESSION['user'];
 
 // Pastikan hanya guru yang boleh mengakses halaman ini
 if ($user['peran'] !== 'guru') {

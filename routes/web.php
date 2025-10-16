@@ -23,7 +23,7 @@ require_once __DIR__ . '/../app/Controllers/PenilaianController.php';
 
 // Helper
 function safeGetRoute(): string {
-    $r = filter_input(INPUT_GET, 'route', FILTER_SANITIZE_STRING);
+    $r = filter_input(INPUT_GET, 'route');
     return $r ?: 'home';
 }
 
