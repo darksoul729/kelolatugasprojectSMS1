@@ -1,16 +1,3 @@
-<?php
-
-
-// Pastikan hanya guru yang boleh mengakses halaman ini
-if ($user['peran'] !== 'guru') {
-    $_SESSION['message'] = [
-        'type' => 'danger',
-        'text' => 'Hanya guru yang dapat mengakses halaman ini.'
-    ];
-    header("Location: /index.php");
-    exit;
-}
-?>
 
 
 <!DOCTYPE html>

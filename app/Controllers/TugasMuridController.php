@@ -18,16 +18,16 @@ class TugasMuridController {
         }
 
         $tugas = $this->tugasModel->allBySiswa($user['id_user']);
-        include '../views/murid/list_tugas.php';
+        include '../resources/views/murid/dashboard_murid.php';
     }
 
     public function show($id) {
         $tugas = $this->tugasModel->findById($id);
         if (!$tugas) {
             $_SESSION['message'] = ['type' => 'danger', 'text' => 'Tugas tidak ditemukan.'];
-            header("Location: ../murid/list_tugas.php");
+            header("Location: ?route=murid/tugas");
             exit;
         }
-        include '../views/murid/detail_tugas.php';
+        include '../resources/views/murid/detail_tugas.php';
     }
 }

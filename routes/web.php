@@ -104,7 +104,7 @@ switch ($route) {
     // MURID
     case 'murid/dashboard':
         $authCtrl->requireRole('siswa');
-        include __DIR__ . '/../resources/views/murid/dashboard_murid.php';
+        $tugasSiswaCtrl->index();
         break;
 
     case 'murid/tugas':

@@ -80,7 +80,7 @@ class TugasController {
                 $_SESSION['message'] = ['type' => 'danger', 'text' => $result['message']];
             }
 
-            header("Location: ../resources/views/guru/dashboard_guru.php");
+header("Location: /routes/web.php?route=guru/dashboard");
             exit;
         }
 

@@ -36,20 +36,19 @@ class Tugas {
     }
 
     public function allBySiswa($id_siswa) {
-        // Ambil semua tugas + status pengumpulan siswa
-        $stmt = $this->pdo->prepare("
-            SELECT t.*, k.nama_kategori, u.nama_lengkap AS nama_guru,
-                   p.id_pengumpulan, p.status_pengumpulan, p.tanggal_kirim
-            FROM tugas t
-            JOIN kategori_tugas k ON t.id_kategori = k.id_kategori
-            JOIN users u ON t.id_guru = u.id_user
-            LEFT JOIN pengumpulan_tugas p ON t.id_tugas = p.id_tugas AND p.id_siswa = ?
-            WHERE t.status_tugas = 'aktif'
-            ORDER BY t.tanggal_deadline ASC
-        ");
-        $stmt->execute([$id_siswa]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // Ambil semua tugas + status pengumpulan siswa
+    $stmt = $this->pdo->prepare("
+        SELECT t.*, k.nama_kategori, u.nama_lengkap AS nama_guru,
+               p.id_pengumpulan, p.status_pengumpulan, p.tanggal_kirim
+        FROM tugas t
+        JOIN kategori_tugas k ON t.id_kategori = k.id_kategori
+        JOIN users u ON t.id_guru = u.id_user
+        LEFT JOIN pengumpulan_tugas p ON t.id_tugas = p.id_tugas AND p.id_siswa = ?
+        ORDER BY t.tanggal_deadline ASC
+    ");
+    $stmt->execute([$id_siswa]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     public function updateStatus($id_tugas, $status) {
         $stmt = $this->pdo->prepare("UPDATE {$this->table} SET status_tugas = ? WHERE id_tugas = ?");
