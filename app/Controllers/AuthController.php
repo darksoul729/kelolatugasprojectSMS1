@@ -2,112 +2,98 @@
 require_once __DIR__ . '/../Models/User.php';
 
 class AuthController {
-    private $pdo;
     private $userModel;
 
     public function __construct($pdo) {
-        $this->pdo = $pdo;
         $this->userModel = new User($pdo);
     }
 
-    // === HALAMAN REGISTER ===
-    public function showRegister() {
-        $error = '';
-        include __DIR__ . '/../../resources/views/auth/register.php';
-    }
-
-    // === PROSES REGISTER ===
-    public function doRegister() {
-        $error = '';
-
+    public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nama_lengkap = trim($_POST['nama_lengkap']);
             $username = trim($_POST['username']);
             $password = $_POST['password'];
-            $confirm_password = $_POST['confirm_password'];
 
-            if (empty($nama_lengkap) || empty($username) || empty($password) || empty($confirm_password)) {
-                $error = "Semua field harus diisi.";
-            } elseif ($password !== $confirm_password) {
-                $error = "Password tidak cocok.";
-            } elseif (strlen($password) < 6) {
-                $error = "Password minimal 6 karakter.";
-            } else {
-                $result = $this->userModel->register($nama_lengkap, $username, $password, 'siswa');
+            $result = $this->userModel->login($username, $password);
 
-                if ($result['success']) {
-                   
-                    header("Location: /routes/web.php?route=auth/login&registered=1");
-                    exit;
-                } else {
-                    $error = $result['message'];
+            if ($result['success']) {
+                $_SESSION['user'] = $result['user'];
+                $_SESSION['message'] = ['type' => 'success', 'text' => 'Login berhasil!'];
+
+                switch ($result['user']['peran']) {
+                    case 'admin': header("Location: ?route=admin/users"); break;
+                    case 'guru': header("Location: ?route=guru/dashboard"); break;
+                    case 'siswa': header("Location: ?route=murid/dashboard"); break;
+                    default: header("Location: ?route=home");
                 }
+                exit;
+            } else {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => $result['message']];
+                header("Location: ?route=auth/login");
+                exit;
             }
+        } else {
+            $this->showLogin();
         }
-
-        include __DIR__ . '/../../resources/views/auth/register.php';
     }
 
-    // === HALAMAN LOGIN ===
     public function showLogin() {
-        $error = '';
         include __DIR__ . '/../../resources/views/auth/login.php';
     }
 
-    // === PROSES LOGIN ===
-    public function doLogin() {
-        $error = '';
+    public function showRegister() {
+        include __DIR__ . '/../../resources/views/auth/register.php';
+    }
 
+    public function register() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = trim($_POST['username']);
-            $password = $_POST['password'];
+            $password = $_POST['password'] ?? '';
+            $confirm_password = $_POST['confirm_password'] ?? '';
 
-            if (empty($username) || empty($password)) {
-                $error = "Masukkan username dan password.";
-            } else {
-                $result = $this->userModel->login($username, $password);
-
-                if ($result['success']) {
-                    $user = $result['user'];
-
-                    session_start();
-                    $_SESSION['logged_in'] = true;
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['username'] = $user['username'];
-                    $_SESSION['role'] = $user['role'];
-
-                    if ($user['role'] === 'siswa') {
-                        header("Location: /routes/web.php?route=tugas/list");
-                    } else {
-                        header("Location: /routes/web.php?route=admin/dashboard");
-                    }
-                    exit;
-                } else {
-                    $error = $result['message'];
-                }
+            if ($password !== $confirm_password) {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => 'Password dan konfirmasi tidak cocok.'];
+                header("Location: ?route=auth/register");
+                exit;
             }
+
+            $nama = trim($_POST['nama_lengkap'] ?? '');
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $peran = $_POST['peran'] ?? 'siswa';
+            $kelas = $_POST['kelas'] ?? null;
+            $nip_nis = $_POST['nip_nis'] ?? null;
+
+            if (empty($nama) || empty($username) || empty($email) || empty($password)) {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => 'Semua field wajib diisi.'];
+                header("Location: ?route=auth/register");
+                exit;
+            }
+
+            $result = $this->userModel->register($nama, $username, $email, $password, $peran, $kelas, $nip_nis);
+
+            if ($result['success']) {
+                $_SESSION['message'] = ['type' => 'success', 'text' => 'Registrasi berhasil! Silakan login.'];
+                header("Location: ?route=auth/login");
+            } else {
+                $_SESSION['message'] = ['type' => 'danger', 'text' => $result['message']];
+                header("Location: ?route=auth/register");
+            }
+            exit;
+        } else {
+            $this->showRegister();
         }
-
-        include __DIR__ . '/../../resources/views/auth/login.php';
     }
 
-    // === LOGOUT ===
     public function logout() {
-        session_start();
         session_destroy();
-        header("Location: /routes/web.php?route=auth/login");
+        header("Location: ?route=home");
         exit;
     }
 
-  public function requireRole($role) {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+    public function requireRole($role) {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['peran'] !== $role) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Akses ditolak.'];
+            header("Location: ?route=auth/login");
+            exit;
+        }
     }
-
-    if (!isset($_SESSION['role']) || $_SESSION['role'] !== $role) {
-        header("Location: /routes/web.php?route=auth/login");
-        exit;
-    }
-}
-
 }

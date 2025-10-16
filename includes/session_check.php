@@ -1,30 +1,18 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
+// includes/session_check.php
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ambil route dari URL
-$currentRoute = $_GET['route'] ?? '';
-
-// Abaikan proteksi jika halaman login/register
-$publicRoutes = [
-    'auth/login',
-    'auth/register',
-    'auth/doLogin',
-    'auth/doRegister',
-    'home'
-];
-
-if (!in_array($currentRoute, $publicRoutes)) {
-    // Jika belum login, arahkan ke halaman login
-    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-        header("Location: ?route=auth/login");
-        exit;
-    }
-
-    // Cek role jika dibutuhkan
-    if (isset($require_role) && $_SESSION['role'] !== $require_role) {
-        header("Location: ?route=auth/login");
-        exit;
+class AuthHelper {
+    public static function requireRole($role) {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['peran'] !== $role) {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Akses ditolak.'];
+            header("Location: ?route=auth/login");
+            exit;
+        }
     }
 }
+
+// Tambahkan ke AuthController sebagai method
+// Tapi agar mudah, kita tambahkan di AuthController langsung

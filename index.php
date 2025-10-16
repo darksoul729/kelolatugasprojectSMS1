@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
@@ -43,7 +42,6 @@
 <body class="font-sans bg-gray-50 text-gray-800">
 
   <!-- Navbar -->
-
   <header class="fixed top-0 left-0 w-full z-50 bg-white shadow-md transition-transform duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <!-- Brand -->
@@ -60,26 +58,14 @@
         <a href="#kontak" class="font-medium text-gray-600 hover:text-biru transition">Kontak</a>
       </nav>
 
- <div class="hidden md:flex items-center space-x-4">
-  <!-- Tombol Login -->
-  <button
-    type="button"
-    class="text-gray-600 hover:text-biru font-medium"
-    onclick="window.location.href='/routes/web.php?route=auth/login'">
-    Login
-  </button>
+      <!-- Tombol Login & Daftar (Desktop) -->
+      <div class="hidden md:flex items-center space-x-4">
+      <a href="/routes/web.php?route=auth/login" class="text-gray-600 hover:text-biru font-medium">Login</a>
+<a href="/routes/web.php?route=auth/register" class="px-5 py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90 transition">Daftar</a>
 
-  <!-- Tombol Daftar -->
-  <button
-    type="button"
-    class="px-5 py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90 transition"
-    onclick="window.location.href='/routes/web.php?route=auth/register'">
-    Daftar
-  </button>
-</div>
+      </div>
 
-
-      <!-- Mobile Menu Button -->
+      <!-- Tombol Menu Mobile -->
       <button id="menuToggle" class="md:hidden text-gray-600 text-2xl">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -87,16 +73,14 @@
       </button>
     </div>
 
-
-    <!-- Mobile Menu -->
+    <!-- Menu Mobile -->
     <div id="mobileMenu" class="hidden md:hidden bg-white py-4 px-4 shadow-inner">
       <div class="flex flex-col space-y-4">
         <a href="#fitur" class="block py-2 hover:text-biru font-medium">Fitur</a>
         <a href="#kontak" class="block py-2 hover:text-biru font-medium">Kontak</a>
         <div class="pt-3 flex flex-col space-y-3 border-t border-gray-200">
-          <button class="w-full py-2 text-center border border-biru text-biru rounded-lg hover:bg-blue-50" onclick="window.location.href='/routes/web.php?route=auth/login'">Login</button>
-          <!-- Tombol Daftar hanya muncul di mobile -->
-          <button class="w-full py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90" onclick="window.location.href='/routes/web.php?route=auth/register'">Daftar</button>
+          <button class="w-full py-2 text-center border border-biru text-biru rounded-lg hover:bg-blue-50" onclick="window.location.href='/auth/login.php'">Login</button>
+          <button class="w-full py-2 bg-gradient-to-r from-biru to-indigo-600 text-white rounded-lg hover:opacity-90" onclick="window.location.href='/auth/register.php'">Daftar</button>
         </div>
       </div>
     </div>
@@ -109,7 +93,7 @@
       <p class="max-w-3xl mx-auto text-lg text-gray-300 mb-10">
         Aplikasi pengelola tugas berbasis PHP Native: Simpel, cepat, dan efektif untuk mengatur semua pekerjaanmu.
       </p>
-      <a href="#coba" class="inline-block bg-gradient-to-r from-hijau to-green-500 hover:opacity-90 text-white font-medium py-3 px-8 rounded-full text-lg transition">Coba Sekarang Gratis</a>
+      <a href="/auth/register.php" class="inline-block bg-gradient-to-r from-hijau to-green-500 hover:opacity-90 text-white font-medium py-3 px-8 rounded-full text-lg transition">Coba Sekarang Gratis</a>
     </div>
   </section>
 

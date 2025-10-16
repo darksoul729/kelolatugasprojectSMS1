@@ -91,11 +91,12 @@
       <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Buat Akun</h2>
       <p class="text-center text-gray-600 mb-6">Ayo mulai perjalananmu!</p>
 
-      <!-- Tampilkan error jika ada -->
-      <?php if (!empty($error)): ?>
-        <div class="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-center">
-          <?= htmlspecialchars($error) ?>
+      <!-- Tampilkan pesan dari session -->
+      <?php if (isset($_SESSION['message'])): ?>
+        <div class="bg-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-100 text-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-700 p-3 rounded-md mb-4 text-center">
+          <?= htmlspecialchars($_SESSION['message']['text']) ?>
         </div>
+        <?php unset($_SESSION['message']); ?>
       <?php endif; ?>
 
       <form method="POST" action="?route=auth/doRegister">
@@ -124,6 +125,18 @@
         </div>
 
         <div class="input-group">
+          <label for="email" class="input-label">Email</label>
+          <div class="relative">
+            <div class="input-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <input type="email" name="email" id="email" class="input-field" placeholder="email@contoh.com" required>
+          </div>
+        </div>
+
+        <div class="input-group">
           <label for="password" class="input-label">Password</label>
           <div class="relative">
             <div class="input-icon">
@@ -147,6 +160,9 @@
           </div>
         </div>
 
+        <!-- Role (opsional: default siswa) -->
+        <input type="hidden" name="peran" value="siswa">
+
         <button type="submit" class="btn-gradient">Daftar Sekarang</button>
       </form>
 
@@ -166,9 +182,9 @@
         <div class="absolute w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl animate-float"></div>
         <div class="absolute w-80 h-80 bg-cyan-300 rounded-full opacity-20 blur-3xl animate-pulseSlow" style="animation-delay:-3s;"></div>
       </div>
-      <div class="relative z-10 grid grid-cols-3 gap-8">
-        <!-- Semua SVG dekorasi tetap sama seperti punyamu -->
-        <!-- ... -->
+      <div class="relative z-10 text-center p-6">
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang!</h3>
+        <p class="text-gray-600 max-w-xs">Bergabunglah dan kelola tugas sekolahmu dengan mudah.</p>
       </div>
     </div>
   </div>

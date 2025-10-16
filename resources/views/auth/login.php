@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- ✅ Spasi dihapus -->
     <script>
         tailwind.config = {
             theme: {
@@ -90,10 +90,12 @@
             <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Masuk</h2>
             <p class="text-center text-gray-600 mb-6">Akses akun kamu untuk melanjutkan</p>
 
-            <?php if (!empty($error)): ?>
-                <div class="mb-6 p-3 bg-red-100 text-red-700 rounded-lg text-center">
-                    <?= htmlspecialchars($error) ?>
+            <!-- ✅ Tampilkan pesan dari session -->
+            <?php if (isset($_SESSION['message'])): ?>
+                <div class="mb-6 p-3 bg-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-100 text-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-700 rounded-lg text-center">
+                    <?= htmlspecialchars($_SESSION['message']['text']) ?>
                 </div>
+                <?php unset($_SESSION['message']); ?>
             <?php endif; ?>
 
             <form method="POST" action="?route=auth/doLogin">
@@ -140,9 +142,9 @@
                 <div class="absolute w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl animate-float"></div>
                 <div class="absolute w-80 h-80 bg-cyan-300 rounded-full opacity-20 blur-3xl animate-pulseSlow" style="animation-delay:-3s;"></div>
             </div>
-            <div class="relative z-10 grid grid-cols-3 gap-8">
-                <!-- semua ikon dekorasi tetap sama -->
-                <!-- (biarkan seperti yang kamu tulis sebelumnya) -->
+            <div class="relative z-10 text-center p-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang Kembali!</h3>
+                <p class="text-gray-600 max-w-xs">Masuk untuk mengelola tugas sekolahmu.</p>
             </div>
         </div>
     </div>
