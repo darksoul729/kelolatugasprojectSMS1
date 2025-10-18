@@ -21,6 +21,22 @@ require_once __DIR__ . '/../app/Controllers/TugasMuridController.php';
 require_once __DIR__ . '/../app/Controllers/PengumpulanController.php';
 require_once __DIR__ . '/../app/Controllers/PenilaianController.php';
 
+
+
+// --- IZINKAN FILE STATIC ---
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if (preg_match('#^/uploads/#', $requestUri)) {
+    $filePath = __DIR__ . $requestUri;
+    if (file_exists($filePath)) {
+        return readfile($filePath);
+    } else {
+        http_response_code(404);
+        echo "File tidak ditemukan.";
+        exit;
+    }
+}
+
+
 // Helper
 function safeGetRoute(): string {
     $r = filter_input(INPUT_GET, 'route');
@@ -93,6 +109,35 @@ switch ($route) {
         include __DIR__ . '/../resources/views/guru/list_pengumpulan.php';
         break;
 
+
+    case 'guru/tugas/edit':
+    $authCtrl->requireRole('guru');
+    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    if ($id) {
+        $tugasGuruCtrl->editForm($id); // tampilkan form edit
+    } else {
+        redirectTo('guru/tugas');
+    }
+    break;
+
+case 'guru/tugas/delete':
+    $authCtrl->requireRole('guru');
+    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    if ($id) {
+        $tugasGuruCtrl->delete($id); // hapus tugas
+    } else {
+        redirectTo('guru/tugas');
+    }
+    break;
+
+
+    case 'guru/tugas/update':
+    $id = $_GET['id'] ?? null;
+    $controller = new TugasController($pdo);
+    $controller->update($id);
+    break;
+
+
     case 'guru/penilaian':
         $authCtrl->requireRole('guru');
         $id_pengumpulan = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -100,6 +145,9 @@ switch ($route) {
             ? $nilaiCtrl->nilai($id_pengumpulan)
             : redirectTo('guru/pengumpulan');
         break;
+
+
+    
 
     // MURID
     case 'murid/dashboard':

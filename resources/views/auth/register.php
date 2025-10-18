@@ -1,190 +1,142 @@
 <!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daftar Akun</title>
+  <!-- ✅ Perbaiki spasi di CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          animation: {
-            float: 'float 6s ease-in-out infinite',
-            pulseSlow: 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-12px)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer utilities {
-      .bg-gradient-main {
-        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 50%, #f0f9ff 100%);
-      }
-      .bg-card-custom {
-        background-color: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      .input-group { position: relative; margin-bottom: 1.5rem; }
-      .input-icon {
-        position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-        width: 1.25rem; height: 1.25rem; color: #9ca3af; pointer-events: none;
-      }
-      .input-field { 
-        width: 100%; padding-left: 3rem; padding-top: 0.75rem; padding-bottom: 0.75rem;
-        border: 2px solid #d1d5db; border-radius: 0.5rem;
-        background-color: white;
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-      .input-field:focus {
-        outline: none; border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-      }
-      .input-label {
-        display: block; margin-bottom: 0.25rem;
-        font-size: 0.875rem; font-weight: 500; color: #374151;
-      }
-      .btn-gradient {
-        width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem;
-        background: linear-gradient(to right, #2563eb, #0891b2);
-        color: white; font-weight: 500; transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .btn-gradient:hover {
-        background: linear-gradient(to right, #1d4ed8, #0e7490);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-      }
-      .btn-outline {
-        width: 100%; padding: 0.75rem 1rem;
-        border-radius: 0.5rem; border: 2px solid #d1d5db;
-        background-color: white; color: #374151;
-        font-weight: 500; transition: all 0.3s ease;
-      }
-      .btn-outline:hover { background-color: #f9fafb; border-color: #9ca3af; }
-    }
-  </style>
+  <!-- Tidak perlu konfigurasi animasi jika hanya digunakan di landing page -->
 </head>
 
-<body class="h-full bg-gradient-main flex items-center justify-center p-6 overflow-hidden relative">
-
-  <!-- Efek Bubble Background -->
-  <div class="fixed inset-0 -z-10 overflow-hidden">
-    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float"></div>
-    <div class="absolute top-1/3 right-1/4 w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float" style="animation-delay: -2s;"></div>
-    <div class="absolute bottom-1/4 left-1/2 w-60 h-60 bg-sky-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulseSlow"></div>
+<body class="h-full bg-gray-50">
+  <!-- Background animasi lembut (opsional, bisa dihapus jika tidak ingin efek ini di semua halaman) -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-100 rounded-full opacity-20"></div>
+    <div class="absolute top-1/3 right-1/4 w-72 h-72 bg-cyan-100 rounded-full opacity-20"></div>
+    <div class="absolute bottom-1/4 left-1/2 w-60 h-60 bg-sky-100 rounded-full opacity-20"></div>
   </div>
 
-  <!-- Kartu Dua Kolom -->
-  <div class="bg-card-custom rounded-2xl shadow-xl overflow-hidden w-full max-w-5xl grid md:grid-cols-2">
-    
-    <!-- Bagian Form -->
-    <div class="p-8 bg-white bg-opacity-100 relative">
-      <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Buat Akun</h2>
-      <p class="text-center text-gray-600 mb-6">Ayo mulai perjalananmu!</p>
-
-      <!-- Tampilkan pesan dari session -->
-      <?php if (isset($_SESSION['message'])): ?>
-        <div class="bg-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-100 text-<?= $_SESSION['message']['type'] === 'danger' ? 'red' : 'green' ?>-700 p-3 rounded-md mb-4 text-center">
-          <?= htmlspecialchars($_SESSION['message']['text']) ?>
+  <!-- Container Flex utama -->
+  <div class="min-h-full flex items-center justify-center p-4 md:p-6">
+    <!-- Grid untuk Form & Ilustrasi -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
+      
+      <!-- Bagian Form -->
+      <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+        
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold text-gray-800">Buat Akun Baru</h2>
+          <p class="text-gray-600 mt-2 text-sm md:text-base">Isi data lengkapmu untuk mendaftar</p>
         </div>
-        <?php unset($_SESSION['message']); ?>
-      <?php endif; ?>
 
-      <form method="POST" action="?route=auth/doRegister">
-        <div class="input-group">
-          <label for="nama_lengkap" class="input-label">Nama Lengkap</label>
-          <div class="relative">
-            <div class="input-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-            <input type="text" name="nama_lengkap" id="nama_lengkap" class="input-field" placeholder="Nama Lengkap Anda" required>
+        <!-- Notifikasi -->
+        <?php if (isset($_SESSION['message'])): ?>
+          <div class="mb-6 p-3 rounded-lg border 
+            <?php if ($_SESSION['message']['type'] === 'danger'): ?>
+              bg-red-50 border-red-200 text-red-700
+            <?php else: ?>
+              bg-green-50 border-green-200 text-green-700
+            <?php endif; ?>">
+            <span class="font-medium text-sm"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
           </div>
-        </div>
+          <?php unset($_SESSION['message']); ?>
+        <?php endif; ?>
 
-        <div class="input-group">
-          <label for="username" class="input-label">Username</label>
-          <div class="relative">
-            <div class="input-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-            <input type="text" name="username" id="username" class="input-field" placeholder="Username Anda" required>
+        <form method="POST" action="?route=auth/doRegister" class="space-y-5">
+          <!-- Nama Lengkap -->
+          <div>
+            <label for="nama_lengkap" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+            <input type="text" name="nama_lengkap" id="nama_lengkap" required
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                   placeholder="Nama lengkap Anda" />
           </div>
-        </div>
 
-        <div class="input-group">
-          <label for="email" class="input-label">Email</label>
-          <div class="relative">
-            <div class="input-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-            </div>
-            <input type="email" name="email" id="email" class="input-field" placeholder="email@contoh.com" required>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" name="email" id="email" required
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                   placeholder="email@contoh.com" />
           </div>
-        </div>
 
-        <div class="input-group">
-          <label for="password" class="input-label">Password</label>
-          <div class="relative">
-            <div class="input-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
-            </div>
-            <input type="password" name="password" id="password" class="input-field" placeholder="••••••••" required>
+          <!-- Kelas (opsional) -->
+          <div>
+            <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas (opsional)</label>
+            <select name="kelas" id="kelas"
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+              <option value="">-- Pilih Kelas --</option>
+              <?php
+              $tingkatan = ['X', 'XI', 'XII'];
+              $jurusan = ['PPLG', 'DKV', 'MPLB', 'TJKT'];
+
+              foreach ($tingkatan as $t) {
+                  foreach ($jurusan as $j) {
+                      $kelas = "$t $j";
+                      echo "<option value='" . htmlspecialchars($kelas) . "'>" . htmlspecialchars($kelas) . "</option>";
+                  }
+              }
+              ?>
+            </select>
           </div>
-        </div>
 
-        <div class="input-group">
-          <label for="confirm_password" class="input-label">Konfirmasi Password</label>
-          <div class="relative">
-            <div class="input-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-              </svg>
-            </div>
-            <input type="password" name="confirm_password" id="confirm_password" class="input-field" placeholder="••••••••" required>
+          <!-- NIP/NIS (opsional) -->
+          <div>
+            <label for="nip_nis" class="block text-sm font-medium text-gray-700 mb-1">NIP / NIS (opsional)</label>
+            <input type="text" name="nip_nis" id="nip_nis"
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                   placeholder="Masukkan NIP (guru) atau NIS (siswa)" />
           </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" name="password" id="password" required
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                   placeholder="••••••••" />
+          </div>
+
+          <!-- Konfirmasi Password -->
+          <div>
+            <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
+            <input type="password" name="confirm_password" id="confirm_password" required
+                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                   placeholder="••••••••" />
+          </div>
+
+          <!-- Role tersembunyi -->
+          <input type="hidden" name="peran" value="siswa" />
+
+          <!-- Tombol -->
+          <button type="submit"
+            class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Daftar Sekarang
+          </button>
+        </form>
+
+        <div class="mt-6 text-center">
+          <a href="?route=home" class="text-sm text-gray-600 hover:text-gray-900 transition">← Kembali ke Beranda</a>
         </div>
 
-        <!-- Role (opsional: default siswa) -->
-        <input type="hidden" name="peran" value="siswa">
-
-        <button type="submit" class="btn-gradient">Daftar Sekarang</button>
-      </form>
-
-      <div class="mt-6">
-        <a href="?route=home" class="btn-outline">← Kembali ke Beranda</a>
+        <div class="mt-4 text-center text-sm text-gray-600">
+          Sudah punya akun?
+          <a href="?route=auth/login" class="text-blue-600 font-medium hover:underline">Masuk di sini</a>
+        </div>
       </div>
 
-      <p class="text-center mt-6 text-gray-600">
-        Sudah punya akun?
-        <a href="?route=auth/login" class="text-blue-600 font-medium hover:underline transition">Masuk di sini</a>
-      </p>
-    </div>
-
-    <!-- Bagian Dekorasi -->
-    <div class="relative hidden md:flex items-center justify-center bg-gradient-to-tr from-blue-100 via-cyan-100 to-white overflow-hidden">
-      <div class="absolute inset-0 flex justify-center items-center">
-        <div class="absolute w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl animate-float"></div>
-        <div class="absolute w-80 h-80 bg-cyan-300 rounded-full opacity-20 blur-3xl animate-pulseSlow" style="animation-delay:-3s;"></div>
-      </div>
-      <div class="relative z-10 text-center p-6">
-        <h3 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang!</h3>
-        <p class="text-gray-600 max-w-xs">Bergabunglah dan kelola tugas sekolahmu dengan mudah.</p>
+      <!-- Bagian Ilustrasi / Dekoratif (Hanya muncul di md ke atas) -->
+      <div class="hidden md:flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl"> <!-- Tambahkan latar belakang lembut -->
+        <div class="max-w-xs w-full text-center">
+          <!-- Ikon Tugas -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-700 mt-4">Mulai Kelola Tugasmu!</h3>
+          <p class="text-gray-500 text-sm mt-2">
+            Buat akun untuk mengakses fitur pengelolaan tugas yang membantumu belajar lebih terorganisir.
+          </p>
+        </div>
       </div>
     </div>
   </div>
