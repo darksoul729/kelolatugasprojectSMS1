@@ -33,7 +33,7 @@ class TugasController {
         $totalSiswa = $stmtSiswa->fetch()['total'] ?? 0;
         $totalTugas = count($tugas);
 
-        include '../resources/views/guru/dashboard_guru.php';
+        include __DIR__ . '/../../resources/views/guru/dashboard_guru.php';
     }
 
     /**
