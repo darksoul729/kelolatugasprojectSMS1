@@ -18,7 +18,7 @@ class TugasMuridController {
         }
 
         $tugas = $this->tugasModel->allBySiswa($user['id_user']);
-        include '../resources/views/murid/dashboard_murid.php';
+        include __DIR__ . '/../../resources/views/murid/dashboard_murid.php';
     }
 
     public function show($id) {
@@ -28,6 +28,6 @@ class TugasMuridController {
             header("Location: ?route=murid/tugas");
             exit;
         }
-        include '../resources/views/murid/detail_tugas.php';
+        include __DIR__ . '/../../resources/views/murid/detail_tugas.php';
     }
 }

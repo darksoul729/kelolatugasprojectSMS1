@@ -49,7 +49,7 @@ function redirectTo(string $route) {
 }
 
 $route = safeGetRoute();
-
+$route = $_GET['route'] ?? '/';
 $authCtrl      = new AuthController($pdo);
 $userCtrl      = new UserController($pdo);
 $tugasGuruCtrl = new TugasController($pdo);
@@ -58,8 +58,12 @@ $kumpulCtrl    = new PengumpulanController($pdo);
 $nilaiCtrl     = new PenilaianController($pdo);
 
 switch ($route) {
+     case '/':
+        require __DIR__ . '/../resources/views/landing.php';
+        break;
+
     case 'home':
-        include __DIR__ . '/../index.php';
+        require __DIR__ . '/../resources/views/landing.php';
         break;
 
     // AUTH
