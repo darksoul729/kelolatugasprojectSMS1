@@ -19,27 +19,27 @@ class TugasMuridController {
     /** 
      * Halaman daftar tugas untuk siswa 
      */
-    public function index() {
-        if (!isset($_SESSION['user'])) {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Silakan login terlebih dahulu.'];
-            header("Location: ?route=auth/login");
-            exit;
-        }
-
-        $user = $_SESSION['user'];
-
-        if ($user['peran'] !== 'siswa') {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya siswa yang dapat mengakses halaman ini.'];
-            header("Location: ?route=home");
-            exit;
-        }
-
-        // Ambil daftar tugas berdasarkan siswa
-        $tugas = $this->tugasModel->allBySiswa($user['id_user']);
-
-        // Gunakan basePath agar aman di semua OS
-        include $this->basePath . '/resources/views/murid/dashboard_murid.php';
+   public function index() {
+    if (!isset($_SESSION['user'])) {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Silakan login terlebih dahulu.'];
+        header("Location: ?route=auth/login");
+        exit;
     }
+
+    $user = $_SESSION['user'];
+
+    if ($user['peran'] !== 'siswa') {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya siswa yang dapat mengakses halaman ini.'];
+        header("Location: ?route=home");
+        exit;
+    }
+
+    // Sekarang otomatis hanya ambil tugas sesuai kelas siswa
+    $tugas = $this->tugasModel->allBySiswa($user['id_user']);
+
+    include $this->basePath . '/resources/views/murid/dashboard_murid.php';
+}
+
 
     /** 
      * Halaman detail tugas untuk siswa 
