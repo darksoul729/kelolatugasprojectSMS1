@@ -3,30 +3,31 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../includes/db_config.php';
-require_once __DIR__ . '/../includes/session_check.php';
+$basePath = dirname(__DIR__); // dari folder /routes ke root proyek
+
+require_once $basePath . '/includes/db_config.php';
+require_once $basePath . '/includes/session_check.php';
 
 // Models
-require_once __DIR__ . '/../app/Models/User.php';
-require_once __DIR__ . '/../app/Models/Tugas.php';
-require_once __DIR__ . '/../app/Models/KategoriTugas.php';
-require_once __DIR__ . '/../app/Models/PengumpulanTugas.php';
-require_once __DIR__ . '/../app/Models/Penilaian.php';
+require_once $basePath . '/app/Models/User.php';
+require_once $basePath . '/app/Models/Tugas.php';
+require_once $basePath . '/app/Models/KategoriTugas.php';
+require_once $basePath . '/app/Models/PengumpulanTugas.php';
+require_once $basePath . '/app/Models/Penilaian.php';
 
 // Controllers
-require_once __DIR__ . '/../app/Controllers/AuthController.php';
-require_once __DIR__ . '/../app/Controllers/UserController.php';
-require_once __DIR__ . '/../app/Controllers/TugasController.php';
-require_once __DIR__ . '/../app/Controllers/TugasMuridController.php';
-require_once __DIR__ . '/../app/Controllers/PengumpulanController.php';
-require_once __DIR__ . '/../app/Controllers/PenilaianController.php';
+require_once $basePath . '/app/Controllers/AuthController.php';
+require_once $basePath . '/app/Controllers/AdminController.php';
+require_once $basePath . '/app/Controllers/TugasController.php';
+require_once $basePath . '/app/Controllers/TugasMuridController.php';
+require_once $basePath . '/app/Controllers/PengumpulanController.php';
+require_once $basePath . '/app/Controllers/PenilaianController.php';
 
 
-
-// --- IZINKAN FILE STATIC ---
+// --- IZINKAN FILE STATIC (upload) ---
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (preg_match('#^/uploads/#', $requestUri)) {
-    $filePath = __DIR__ . $requestUri;
+    $filePath = $basePath . '/public' . $requestUri;
     if (file_exists($filePath)) {
         return readfile($filePath);
     } else {
@@ -35,7 +36,6 @@ if (preg_match('#^/uploads/#', $requestUri)) {
         exit;
     }
 }
-
 
 // Helper
 function safeGetRoute(): string {
@@ -48,32 +48,69 @@ function redirectTo(string $route) {
     exit;
 }
 
-$route = safeGetRoute();
-$route = $_GET['route'] ?? '/';
-$authCtrl      = new AuthController($pdo);
-$userCtrl      = new UserController($pdo);
-$tugasGuruCtrl = new TugasController($pdo);
-$tugasSiswaCtrl= new TugasMuridController($pdo);
-$kumpulCtrl    = new PengumpulanController($pdo);
-$nilaiCtrl     = new PenilaianController($pdo);
+// Inisialisasi Controller
+$route           = safeGetRoute();
+$authCtrl        = new AuthController($pdo);
+$userCtrl        = new AdminController($pdo);
+$tugasGuruCtrl   = new TugasController($pdo);
+$tugasSiswaCtrl  = new TugasMuridController($pdo);
+$kumpulCtrl      = new PengumpulanController($pdo);
+$nilaiCtrl       = new PenilaianController($pdo);
 
+
+// ==============================
+//  BLOKIR AKSES LOGIN/REGISTER UNTUK YANG SUDAH LOGIN
+// ==============================
+if (isset($_SESSION['user'])) {
+    $role = $_SESSION['user']['peran'];
+
+    // Daftar route khusus guest
+    $guestOnlyRoutes = ['/', 'home','auth/login', 'auth/register', 'auth/doLogin', 'auth/doRegister'];
+
+    if (in_array($route, $guestOnlyRoutes)) {
+        // Arahkan sesuai peran
+        switch ($role) {
+            case 'admin':
+                header("Location: ?route=admin/users");
+                exit;
+            case 'guru':
+                header("Location: ?route=guru/dashboard");
+                exit;
+            case 'siswa':
+                header("Location: ?route=murid/dashboard");
+                exit;
+            default:
+                header("Location: ?route=home");
+                exit;
+        }
+    }
+}
+
+
+// === ROUTER ===
 switch ($route) {
-     case '/':
-        require __DIR__ . '/../resources/views/landing.php';
-        break;
-
+    /** ==============================
+     *  LANDING / HOME
+     *  ============================== */
+    case '/':
     case 'home':
-        require __DIR__ . '/../resources/views/landing.php';
+        require $basePath . '/resources/views/landing.php';
         break;
 
-    // AUTH
+
+    /** ==============================
+     *  AUTHENTICATION
+     *  ============================== */
     case 'auth/login': $authCtrl->showLogin(); break;
     case 'auth/doLogin': $authCtrl->login(); break;
     case 'auth/register': $authCtrl->showRegister(); break;
     case 'auth/doRegister': $authCtrl->register(); break;
     case 'auth/logout': $authCtrl->logout(); break;
 
-    // ADMIN
+
+    /** ==============================
+     *  ADMIN PANEL
+     *  ============================== */
     case 'admin/users':
         $authCtrl->requireRole('admin');
         $userCtrl->index();
@@ -85,11 +122,13 @@ switch ($route) {
         $id ? $userCtrl->show($id) : redirectTo('admin/users');
         break;
 
-    // GURU
+
+    /** ==============================
+     *  GURU DASHBOARD
+     *  ============================== */
     case 'guru/dashboard':
         $authCtrl->requireRole('guru');
-        $controller = new TugasController($pdo);
-        $controller->index();
+        $tugasGuruCtrl->index();
         break;
 
     case 'guru/tugas':
@@ -108,39 +147,28 @@ switch ($route) {
         $id ? $tugasGuruCtrl->show($id) : redirectTo('guru/tugas');
         break;
 
-    case 'guru/pengumpulan':
+    case 'guru/tugas/edit':
         $authCtrl->requireRole('guru');
-        include __DIR__ . '/../resources/views/guru/list_pengumpulan.php';
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id ? $tugasGuruCtrl->editForm($id) : redirectTo('guru/tugas');
         break;
 
-
-    case 'guru/tugas/edit':
-    $authCtrl->requireRole('guru');
-    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    if ($id) {
-        $tugasGuruCtrl->editForm($id); // tampilkan form edit
-    } else {
-        redirectTo('guru/tugas');
-    }
-    break;
-
-case 'guru/tugas/delete':
-    $authCtrl->requireRole('guru');
-    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    if ($id) {
-        $tugasGuruCtrl->delete($id); // hapus tugas
-    } else {
-        redirectTo('guru/tugas');
-    }
-    break;
-
-
     case 'guru/tugas/update':
-    $id = $_GET['id'] ?? null;
-    $controller = new TugasController($pdo);
-    $controller->update($id);
-    break;
+        $authCtrl->requireRole('guru');
+        $id = $_GET['id'] ?? null;
+        $tugasGuruCtrl->update($id);
+        break;
 
+    case 'guru/tugas/delete':
+        $authCtrl->requireRole('guru');
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id ? $tugasGuruCtrl->delete($id) : redirectTo('guru/tugas');
+        break;
+
+    case 'guru/pengumpulan':
+        $authCtrl->requireRole('guru');
+        include $basePath . '/resources/views/guru/list_pengumpulan.php';
+        break;
 
     case 'guru/penilaian':
         $authCtrl->requireRole('guru');
@@ -151,14 +179,10 @@ case 'guru/tugas/delete':
         break;
 
 
-    
-
-    // MURID
+    /** ==============================
+     *  MURID DASHBOARD
+     *  ============================== */
     case 'murid/dashboard':
-        $authCtrl->requireRole('siswa');
-        $tugasSiswaCtrl->index();
-        break;
-
     case 'murid/tugas':
         $authCtrl->requireRole('siswa');
         $tugasSiswaCtrl->index();
@@ -176,8 +200,12 @@ case 'guru/tugas/delete':
         $id_tugas ? $kumpulCtrl->submit($id_tugas) : redirectTo('murid/tugas');
         break;
 
+
+    /** ==============================
+     *  404 HALAMAN TIDAK DITEMUKAN
+     *  ============================== */
     default:
         http_response_code(404);
-        include __DIR__ . '/../resources/views/errors/404.php';
+        include $basePath . '/resources/views/errors/404.php';
         break;
 }

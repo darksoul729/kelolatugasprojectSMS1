@@ -17,9 +17,60 @@
       display: inline;
       vertical-align: middle;
     }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
   </style>
+  <script>
+    // Fungsi untuk membuka modal
+    function openModal() {
+        document.getElementById('logout-modal').classList.remove('hidden');
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal() {
+        document.getElementById('logout-modal').classList.add('hidden');
+    }
+
+    // Auto-hide notification
+    document.addEventListener('DOMContentLoaded', () => {
+        const notif = document.getElementById('notifMessage');
+        if (notif) {
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500); // Hapus setelah animasi fade-out selesai
+            }, 5000); // Hilang setelah 5 detik
+        }
+    });
+  </script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans">
+
+<?php if (!empty($_SESSION['message'])): ?>
+    <!-- Notifikasi Mengambang -->
+    <div id="notifMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-md w-full z-50 transition-opacity duration-500 opacity-100">
+        <div class="flex items-start gap-3 p-4 rounded-lg border shadow-lg
+            <?php if ($_SESSION['message']['type'] === 'success'): ?>
+                bg-green-50 border-green-200 text-green-700
+            <?php else: ?>
+                bg-red-50 border-red-200 text-red-700
+            <?php endif; ?>">
+            <?php if ($_SESSION['message']['type'] === 'success'): ?>
+                <svg class="w-5 h-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            <?php else: ?>
+                <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            <?php endif; ?>
+            <span class="font-medium text-sm"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
+        </div>
+    </div>
+    <?php unset($_SESSION['message']); ?>
+<?php endif; ?>
 
   <!-- Header (Fixed) -->
   <header id="dashboard-header" class="fixed top-0 left-0 right-0 bg-white shadow-md z-10">
@@ -31,10 +82,11 @@
         </svg>
         <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Dashboard Siswa</h1>
       </div>
-      <a href="?route=auth/logout"
-         class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+      <!-- Tombol untuk membuka modal -->
+      <button onclick="openModal()"
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
          Logout
-      </a>
+      </button>
     </div>
   </header>
 
@@ -106,7 +158,7 @@
             <!-- Status pengumpulan -->
             <p class="text-sm font-medium px-3 py-1 inline-block rounded-full <?= $statusKumpulClass ?> mb-4"> <!-- mb-4 untuk jarak sebelum tombol -->
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 inline mr-1">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.25V11.25a9 9 0 0 0-9-9Z" />
               </svg>
               <?= $t['status_pengumpulan']
                     ? 'Sudah dikumpulkan ('.ucfirst($t['status_pengumpulan']).')'
@@ -123,6 +175,23 @@
       </div>
     <?php endif; ?>
   </main>
+
+  <!-- Modal Logout -->
+  <div id="logout-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 mx-auto">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Konfirmasi Logout</h3>
+        <p class="text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari akun ini?</p>
+        <div class="flex justify-end gap-3">
+            <button onclick="closeModal()" class="px-4 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-300">
+                Batal
+            </button>
+            <a href="?route=auth/logout"
+               class="px-4 py-2 bg-red-500 text-white font-medium rounded hover:bg-red-600 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                Logout
+            </a>
+        </div>
+    </div>
+  </div>
 
 
 </body>

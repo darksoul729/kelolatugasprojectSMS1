@@ -10,39 +10,44 @@ class Tugas {
     /**
      * Buat tugas baru
      */
-    public function create($data) {
-        $sql = "INSERT INTO {$this->table} 
-                (judul_tugas, deskripsi, id_guru, id_kategori, tanggal_mulai, tanggal_deadline, durasi_estimasi, poin_nilai, instruksi_pengumpulan, lampiran_guru, status_tugas)
-                VALUES (:judul_tugas, :deskripsi, :id_guru, :id_kategori, :tanggal_mulai, :tanggal_deadline, :durasi_estimasi, :poin_nilai, :instruksi_pengumpulan, :lampiran_guru, :status_tugas)";
+  public function create($data) {
+    $sql = "INSERT INTO {$this->table} 
+            (judul_tugas, deskripsi, id_guru, id_kategori, tanggal_mulai, tanggal_deadline, 
+             durasi_estimasi, poin_nilai, instruksi_pengumpulan, lampiran_guru, status_tugas, kelas)
+            VALUES 
+            (:judul_tugas, :deskripsi, :id_guru, :id_kategori, :tanggal_mulai, :tanggal_deadline, 
+             :durasi_estimasi, :poin_nilai, :instruksi_pengumpulan, :lampiran_guru, :status_tugas, :kelas)";
 
-        $stmt = $this->pdo->prepare($sql);
+    $stmt = $this->pdo->prepare($sql);
 
-        $params = [
-            ':judul_tugas'           => $data['judul_tugas'],
-            ':deskripsi'             => $data['deskripsi'] ?? null,
-            ':id_guru'               => $data['id_guru'],
-            ':id_kategori'           => $data['id_kategori'],
-            ':tanggal_mulai'         => $data['tanggal_mulai'] ?? date('Y-m-d H:i:s'),
-            ':tanggal_deadline'      => $data['tanggal_deadline'],
-            ':durasi_estimasi'       => $data['durasi_estimasi'] ?? null,
-            ':poin_nilai'            => $data['poin_nilai'] ?? 100,
-            ':instruksi_pengumpulan' => $data['instruksi_pengumpulan'] ?? null,
-            ':lampiran_guru'         => $data['lampiran_guru'] ?? null,
-            ':status_tugas'          => $data['status_tugas'] ?? 'aktif',
+    $params = [
+        ':judul_tugas'           => $data['judul_tugas'],
+        ':deskripsi'             => $data['deskripsi'] ?? null,
+        ':id_guru'               => $data['id_guru'],
+        ':id_kategori'           => $data['id_kategori'],
+        ':tanggal_mulai'         => $data['tanggal_mulai'] ?? date('Y-m-d H:i:s'),
+        ':tanggal_deadline'      => $data['tanggal_deadline'],
+        ':durasi_estimasi'       => $data['durasi_estimasi'] ?? null,
+        ':poin_nilai'            => $data['poin_nilai'] ?? 100,
+        ':instruksi_pengumpulan' => $data['instruksi_pengumpulan'] ?? null,
+        ':lampiran_guru'         => $data['lampiran_guru'] ?? null,
+        ':status_tugas'          => $data['status_tugas'] ?? 'aktif',
+        ':kelas'                 => $data['kelas'] ?? null, // <–– tambahan baru
+    ];
+
+    if ($stmt->execute($params)) {
+        return [
+            'success' => true,
+            'id_tugas' => $this->pdo->lastInsertId()
         ];
-
-        if ($stmt->execute($params)) {
-            return [
-                'success' => true,
-                'id_tugas' => $this->pdo->lastInsertId()
-            ];
-        } else {
-            return [
-                'success' => false,
-                'message' => 'Gagal membuat tugas.'
-            ];
-        }
+    } else {
+        return [
+            'success' => false,
+            'message' => 'Gagal membuat tugas.'
+        ];
     }
+}
+
 
     /**
      * Ambil detail tugas berdasarkan ID

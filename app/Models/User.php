@@ -80,4 +80,42 @@ class User {
         $stmt->execute([$peran]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function countAll() {
+    $stmt = $this->pdo->query("SELECT COUNT(*) AS total FROM {$this->table}");
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function countByRole() {
+    $stmt = $this->pdo->query("
+        SELECT peran, COUNT(*) AS jumlah
+        FROM {$this->table}
+        GROUP BY peran
+    ");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+public function search($keyword) {
+    $sql = "
+        SELECT * FROM {$this->table}
+        WHERE nama_lengkap LIKE :kw1
+           OR email LIKE :kw2
+           OR peran LIKE :kw3
+        ORDER BY nama_lengkap ASC
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+
+    $like = "%{$keyword}%";
+    $stmt->bindParam(':kw1', $like, PDO::PARAM_STR);
+    $stmt->bindParam(':kw2', $like, PDO::PARAM_STR);
+    $stmt->bindParam(':kw3', $like, PDO::PARAM_STR);
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
 }

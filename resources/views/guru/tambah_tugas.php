@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buat Tugas Baru</title>
+  <!-- ✅ Perbaiki spasi di CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen p-4 md:p-6 font-sans">
@@ -38,18 +39,55 @@
         ></textarea>
       </div>
 
-      <!-- Kategori -->
+      <!-- Kategori (Hanya muncul jika data kategori tersedia) -->
+      <?php if (isset($kategori) && !empty($kategori)): ?>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+          <select 
+            name="id_kategori" 
+            required
+            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">— Pilih Kategori —</option>
+            <?php foreach ($kategori as $k): ?>
+              <option value="<?= (int)$k['id_kategori'] ?>"><?= htmlspecialchars($k['nama_kategori']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      <?php else: ?>
+        <!-- Jika kategori tidak ada, kita tetap butuh field 'id_kategori' untuk validasi server-side -->
+        <!-- Kita bisa gunakan hidden input atau tampilkan pesan error -->
+        <!-- Contoh: Tampilkan pesan error -->
+        <div class="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+          <p class="font-medium">Error: Data kategori tidak ditemukan.</p>
+          <p>Silakan hubungi administrator untuk menambahkan kategori terlebih dahulu.</p>
+        </div>
+        <!-- Atau, jika ingin tetap mengizinkan submit dengan kategori kosong (tidak disarankan untuk required di backend): -->
+        <!--
+        <input type="hidden" name="id_kategori" value="" />
+        -->
+      <?php endif; ?>
+
+      <!-- Kelas (Selalu muncul) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Kelas (opsional)</label>
         <select 
-          name="id_kategori" 
-          required
+          name="kelas" 
+          id="kelas"
           class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="">— Pilih Kategori —</option>
-          <?php foreach ($kategori as $k): ?>
-            <option value="<?= (int)$k['id_kategori'] ?>"><?= htmlspecialchars($k['nama_kategori']) ?></option>
-          <?php endforeach; ?>
+          <option value="">— Pilih Kelas —</option>
+          <?php
+          $tingkatan = ['X', 'XI', 'XII'];
+          $jurusan = ['PPLG', 'DKV', 'MPLB', 'TJKT'];
+
+          foreach ($tingkatan as $t) {
+              foreach ($jurusan as $j) {
+                  $kelas = "$t $j";
+                  echo "<option value='" . htmlspecialchars($kelas) . "'>" . htmlspecialchars($kelas) . "</option>";
+              }
+          }
+          ?>
         </select>
       </div>
 

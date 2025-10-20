@@ -122,20 +122,30 @@
                 </div>
             </section>
 
-            <!-- Lampiran -->
-            <?php if (!empty($tugas['lampiran_guru'])): ?>
-                <?php $lampiranPath = "/uploads/tugas/" . htmlspecialchars($tugas['lampiran_guru']); ?>
-                <section>
-                    <h2 class="text-lg font-semibold mb-3 text-gray-800">Lampiran</h2>
-                    <a href="<?= $lampiranPath ?>" target="_blank"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                        <svg class="hero-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Lihat Lampiran
-                    </a>
-                </section>
-            <?php endif; ?>
+     <?php
+$idTugas = $tugas['id_tugas'];
+$folderLampiran = __DIR__ . '/../../../public/uploads/tugas/';
+$allFiles = glob($folderLampiran . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
+$filesLampiran = array_filter($allFiles, fn($file) => str_contains(basename($file), $idTugas));
+?>
+
+<?php if (!empty($filesLampiran)): ?>
+<section>
+    <h2 class="text-lg font-semibold mb-3 text-gray-800">Lampiran</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <?php foreach ($filesLampiran as $file):
+            $fileUrl = '/../../../public/uploads/tugas/' . urlencode(basename($file));
+        ?>
+            <a href="<?= $fileUrl ?>" target="_blank" class="block overflow-hidden rounded-lg shadow hover:scale-105 transition transform">
+                <img src="<?= $fileUrl ?>" alt="<?= htmlspecialchars(basename($file)) ?>" class="w-full h-32 object-cover">
+            </a>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php else: ?>
+<p class="text-gray-500">Tidak ada lampiran untuk tugas ini.</p>
+<?php endif; ?>
+
 
             <!-- Status -->
             <section>
