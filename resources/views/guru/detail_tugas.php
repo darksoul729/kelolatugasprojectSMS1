@@ -122,29 +122,32 @@
                 </div>
             </section>
 
-     <?php
-$idTugas = $tugas['id_tugas'];
-$folderLampiran = __DIR__ . '/../../../public/uploads/tugas/';
-$allFiles = glob($folderLampiran . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
-$filesLampiran = array_filter($allFiles, fn($file) => str_contains(basename($file), $idTugas));
-?>
-
-<?php if (!empty($filesLampiran)): ?>
+<?php if (!empty($tugas['lampiran_guru'])): ?>
 <section>
     <h2 class="text-lg font-semibold mb-3 text-gray-800">Lampiran</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <?php foreach ($filesLampiran as $file):
-            $fileUrl = '/../../../public/uploads/tugas/' . urlencode(basename($file));
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <?php 
+        $file = $tugas['lampiran_guru'];
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $fileUrl = '/../../public/uploads/tugas/' . urlencode($file);
+
+        $imageExtensions = ['jpg','jpeg','png','gif'];
         ?>
+        <?php if (in_array($ext, $imageExtensions)): ?>
             <a href="<?= $fileUrl ?>" target="_blank" class="block overflow-hidden rounded-lg shadow hover:scale-105 transition transform">
-                <img src="<?= $fileUrl ?>" alt="<?= htmlspecialchars(basename($file)) ?>" class="w-full h-32 object-cover">
+                <img src="<?= $fileUrl ?>" alt="<?= htmlspecialchars($file) ?>" class="w-full h-32 object-cover">
             </a>
-        <?php endforeach; ?>
+        <?php else: ?>
+            <a href="<?= $fileUrl ?>" target="_blank" class="flex items-center justify-center h-32 border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition">
+                <span class="text-gray-700 font-medium"><?= htmlspecialchars($file) ?></span>
+            </a>
+        <?php endif; ?>
     </div>
 </section>
 <?php else: ?>
 <p class="text-gray-500">Tidak ada lampiran untuk tugas ini.</p>
 <?php endif; ?>
+
 
 
             <!-- Status -->
