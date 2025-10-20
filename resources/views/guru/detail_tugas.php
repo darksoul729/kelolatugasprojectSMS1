@@ -90,6 +90,12 @@
                 </div>
             </section>
 
+            <section>
+                <h2 class="text-lg font-semibold mb-2 text-gray-800">Kelas</h2>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 leading-relaxed">
+                    <?= htmlspecialchars($tugas['kelas'] ?? 'Tidak ditentukan.') ?>
+                </div>
+            </section>
             <!-- Info Tanggal -->
             <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
