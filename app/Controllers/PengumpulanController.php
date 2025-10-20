@@ -9,6 +9,23 @@ class PengumpulanController {
         $this->pengumpulanModel = new PengumpulanTugas($pdo);
     }
 
+    // Method untuk menampilkan form pengumpulan tugas
+    public function index($id_tugas) {
+        if ($_SESSION['user']['peran'] !== 'siswa') {
+            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya siswa yang bisa mengumpulkan tugas.'];
+            header("Location: ../murid/list_tugas.php");
+            exit;
+        }
+
+        // Ambil data tugas jika diperlukan (misal dari model tugas)
+        // require_once __DIR__ . '/../Models/Tugas.php';
+        // $tugasModel = new Tugas($this->pengumpulanModel->getPDO());
+        // $tugas = $tugasModel->getById($id_tugas);
+
+        // Tampilkan form (bisa pakai include)
+        include __DIR__ . '/../Views/form_kumpul_tugas.php';
+    }
+
     public function submit($id_tugas) {
         if ($_SESSION['user']['peran'] !== 'siswa') {
             $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya siswa yang bisa mengumpulkan tugas.'];

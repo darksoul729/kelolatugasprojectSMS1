@@ -168,6 +168,7 @@ class TugasController {
                 'instruksi_pengumpulan' => $_POST['instruksi_pengumpulan'] ?? null,
                 'lampiran_guru'         => $lampiran,
                 'status_tugas'          => $_POST['status_tugas'] ?? 'aktif',
+                'kelas'                 => $_POST['kelas'] ?? null,
             ];
 
             $result = $this->tugasModel->update($id, $data);
