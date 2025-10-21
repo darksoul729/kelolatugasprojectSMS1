@@ -4,11 +4,7 @@
  * Koneksi ke database menggunakan PDO
  */
 
-<<<<<<< HEAD
 const DB_HOST    = '127.0.0.1';
-=======
-const DB_HOST    = '172.16.239.107';
->>>>>>> 4ef443f (ubah bagian murid)
 const DB_NAME    = 'kelola_tugas';
 const DB_USER    = 'root';
 const DB_PASS    = 'root';
