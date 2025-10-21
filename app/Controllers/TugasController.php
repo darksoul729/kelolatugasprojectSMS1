@@ -17,7 +17,7 @@ class TugasController {
     }
 
     /**
-     * 🟢 Dashboard Guru
+     * Dashboard Guru
      */
     public function index() {
         $user = $_SESSION['user'] ?? null;
@@ -39,7 +39,7 @@ class TugasController {
     }
 
     /**
-     * 🟦 Tambah Tugas
+     * Tambah Tugas
      */
     public function create() {
         $user = $_SESSION['user'] ?? null;
@@ -67,21 +67,21 @@ class TugasController {
             }
 
            $data = [
-    'judul_tugas'           => $_POST['judul_tugas'],
-    'deskripsi'             => $_POST['deskripsi'] ?? null,
-    'id_guru'               => $user['id_user'],
-    'id_kategori'           => $_POST['id_kategori'],
-    'tanggal_mulai'         => $_POST['tanggal_mulai'] ?? date('Y-m-d H:i:s'),
-    'tanggal_deadline'      => $_POST['tanggal_deadline'],
-    'durasi_estimasi'       => $_POST['durasi_estimasi'] ?? null,
-    'poin_nilai'            => $_POST['poin_nilai'] ?? 100,
-    'instruksi_pengumpulan' => $_POST['instruksi_pengumpulan'] ?? null,
-    'lampiran_guru'         => $lampiran,
-    'status_tugas'          => $_POST['status_tugas'] ?? 'aktif',
+                'judul_tugas'           => $_POST['judul_tugas'],
+                'deskripsi'             => $_POST['deskripsi'] ?? null,
+                'id_guru'               => $user['id_user'],
+                'id_kategori'           => $_POST['id_kategori'],
+                'tanggal_mulai'         => $_POST['tanggal_mulai'] ?? date('Y-m-d H:i:s'),
+                'tanggal_deadline'      => $_POST['tanggal_deadline'],
+                'durasi_estimasi'       => $_POST['durasi_estimasi'] ?? null,
+                'poin_nilai'            => $_POST['poin_nilai'] ?? 100,
+                'instruksi_pengumpulan' => $_POST['instruksi_pengumpulan'] ?? null,
+                'lampiran_guru'         => $lampiran,
+                'status_tugas'          => $_POST['status_tugas'] ?? 'aktif',
 
-    // Tambahan baru:
-    'kelas'                 => $_POST['kelas'] ?? null,
-];
+                 // Tambahan baru:
+                 'kelas'                 => $_POST['kelas'] ?? null,
+                ];              
 
 
             $result = $this->tugasModel->create($data);
@@ -100,7 +100,7 @@ class TugasController {
     }
 
     /**
-     * 🟨 Detail Tugas
+     * Detail Tugas
      */
     public function show($id) {
         $tugas = $this->tugasModel->findById($id);
@@ -115,7 +115,7 @@ class TugasController {
     }
 
     /**
-     * 🟧 Form Edit Tugas
+     * Form Edit Tugas
      */
     public function editForm($id) {
         $tugas = $this->tugasModel->findById($id);
@@ -129,7 +129,7 @@ class TugasController {
     }
 
     /**
-     * 🟪 Update Tugas
+     * Update Tugas
      */
     public function update($id) {
         $user = $_SESSION['user'] ?? null;
@@ -168,13 +168,14 @@ class TugasController {
                 'instruksi_pengumpulan' => $_POST['instruksi_pengumpulan'] ?? null,
                 'lampiran_guru'         => $lampiran,
                 'status_tugas'          => $_POST['status_tugas'] ?? 'aktif',
+                'kelas'                 => $_POST['kelas'] ?? null,
             ];
 
             $result = $this->tugasModel->update($id, $data);
 
             $_SESSION['message'] = [
                 'type' => $result['success'] ? 'success' : 'danger',
-                'text' => $result['success'] ? '✅ Tugas berhasil diperbarui.' : '❌ ' . $result['message']
+                'text' => $result['success'] ? 'Tugas berhasil diperbarui.' : '' . $result['message']
             ];
 
             header("Location: /routes/web.php?route=guru/dashboard");
@@ -188,7 +189,7 @@ class TugasController {
     }
 
     /**
-     * 🟥 Hapus Tugas
+     * Hapus Tugas
      */
     public function delete($id) {
         $tugas = $this->tugasModel->findById($id);
@@ -196,7 +197,7 @@ class TugasController {
         if (!$tugas) {
             $_SESSION['message'] = [
                 'type' => 'danger',
-                'text' => '❌ Tugas tidak ditemukan.'
+                'text' => 'Tugas tidak ditemukan.'
             ];
             header("Location: /routes/web.php?route=guru/dashboard");
             exit;
