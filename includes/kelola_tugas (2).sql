@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 20, 2025 at 06:24 AM
+-- Generation Time: Oct 21, 2025 at 01:15 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -20,6 +20,50 @@ SET time_zone = "+00:00";
 --
 -- Database: `kelola_tugas`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `anak_kebiasaan`
+--
+
+CREATE TABLE `anak_kebiasaan` (
+  `id` int UNSIGNED NOT NULL,
+  `id_user` int NOT NULL,
+  `bangun_pagi` tinyint(1) DEFAULT '0',
+  `jam_bangun` time DEFAULT NULL,
+  `beribadah` tinyint(1) DEFAULT '0',
+  `agama` enum('Islam','Kristen','Katolik','Hindu','Buddha','Konghucu','Lainnya') DEFAULT NULL,
+  `sholat_subuh` tinyint(1) DEFAULT '0',
+  `sholat_dzuhur` tinyint(1) DEFAULT '0',
+  `sholat_ashar` tinyint(1) DEFAULT '0',
+  `sholat_maghrib` tinyint(1) DEFAULT '0',
+  `sholat_isya` tinyint(1) DEFAULT '0',
+  `ibadah_lainnya` varchar(255) DEFAULT NULL,
+  `berolahraga` tinyint(1) DEFAULT '0',
+  `jam_olahraga_mulai` time DEFAULT NULL,
+  `jam_olahraga_selesai` time DEFAULT NULL,
+  `foto_olahraga` varchar(255) DEFAULT NULL,
+  `makan_sehat` tinyint(1) DEFAULT '0',
+  `makan_pagi` varchar(150) DEFAULT NULL,
+  `foto_makan_pagi` varchar(255) DEFAULT NULL,
+  `makan_siang` varchar(150) DEFAULT NULL,
+  `foto_makan_siang` varchar(255) DEFAULT NULL,
+  `makan_malam` varchar(150) DEFAULT NULL,
+  `foto_makan_malam` varchar(255) DEFAULT NULL,
+  `gemar_belajar` tinyint(1) DEFAULT '0',
+  `jam_belajar_mulai` time DEFAULT NULL,
+  `jam_belajar_selesai` time DEFAULT NULL,
+  `materi_belajar` varchar(255) DEFAULT NULL,
+  `bermasyarakat` tinyint(1) DEFAULT '0',
+  `kegiatan_masyarakat` varchar(255) DEFAULT NULL,
+  `ket_masyarakat` text,
+  `foto_masyarakat` varchar(255) DEFAULT NULL,
+  `tidur_cepat` tinyint(1) DEFAULT '0',
+  `jam_tidur` time DEFAULT NULL,
+  `ket_tidur` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -176,6 +220,13 @@ INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `password_hash`, `nomor
 --
 
 --
+-- Indexes for table `anak_kebiasaan`
+--
+ALTER TABLE `anak_kebiasaan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`);
+
+--
 -- Indexes for table `kategori_tugas`
 --
 ALTER TABLE `kategori_tugas`
@@ -234,6 +285,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `anak_kebiasaan`
+--
+ALTER TABLE `anak_kebiasaan`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `kategori_tugas`
 --
 ALTER TABLE `kategori_tugas`
@@ -278,6 +335,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `anak_kebiasaan`
+--
+ALTER TABLE `anak_kebiasaan`
+  ADD CONSTRAINT `anak_kebiasaan_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `komentar_tugas`
