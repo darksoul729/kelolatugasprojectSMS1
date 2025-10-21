@@ -3,28 +3,30 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$basePath = dirname(__DIR__); // dari folder /routes ke root proyek
+$basePath = dirname(__DIR__);
 
+// === CONFIG & SESSION ===
 require_once $basePath . '/includes/db_config.php';
 require_once $basePath . '/includes/session_check.php';
 
-// Models
+// === MODELS ===
 require_once $basePath . '/app/Models/User.php';
 require_once $basePath . '/app/Models/Tugas.php';
 require_once $basePath . '/app/Models/KategoriTugas.php';
 require_once $basePath . '/app/Models/PengumpulanTugas.php';
 require_once $basePath . '/app/Models/Penilaian.php';
+require_once $basePath . '/app/Models/AnakKebiasaan.php';
 
-// Controllers
+// === CONTROLLERS ===
 require_once $basePath . '/app/Controllers/AuthController.php';
 require_once $basePath . '/app/Controllers/AdminController.php';
 require_once $basePath . '/app/Controllers/TugasController.php';
 require_once $basePath . '/app/Controllers/TugasMuridController.php';
 require_once $basePath . '/app/Controllers/PengumpulanController.php';
 require_once $basePath . '/app/Controllers/PenilaianController.php';
+require_once $basePath . '/app/Controllers/AnakKebiasaanController.php'; // ✅ baru
 
-
-// --- IZINKAN FILE STATIC (upload) ---
+// === FILE STATIC (upload) ===
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (preg_match('#^/uploads/#', $requestUri)) {
     $filePath = $basePath . '/public' . $requestUri;
@@ -37,7 +39,7 @@ if (preg_match('#^/uploads/#', $requestUri)) {
     }
 }
 
-// Helper
+// === HELPER ===
 function safeGetRoute(): string {
     $r = filter_input(INPUT_GET, 'route');
     return $r ?: 'home';
@@ -48,7 +50,7 @@ function redirectTo(string $route) {
     exit;
 }
 
-// Inisialisasi Controller
+// === INISIALISASI CONTROLLER ===
 $route           = safeGetRoute();
 $authCtrl        = new AuthController($pdo);
 $userCtrl        = new AdminController($pdo);
@@ -56,61 +58,39 @@ $tugasGuruCtrl   = new TugasController($pdo);
 $tugasSiswaCtrl  = new TugasMuridController($pdo);
 $kumpulCtrl      = new PengumpulanController($pdo);
 $nilaiCtrl       = new PenilaianController($pdo);
+$kebiasaanCtrl   = new AnakKebiasaanController($pdo); // ✅ baru
 
-
-// ==============================
-//  BLOKIR AKSES LOGIN/REGISTER UNTUK YANG SUDAH LOGIN
-// ==============================
+// === BLOKIR LOGIN / REGISTER UNTUK YANG SUDAH LOGIN ===
 if (isset($_SESSION['user'])) {
     $role = $_SESSION['user']['peran'];
-
-    // Daftar route khusus guest
     $guestOnlyRoutes = ['/', 'home','auth/login', 'auth/register', 'auth/doLogin', 'auth/doRegister'];
 
     if (in_array($route, $guestOnlyRoutes)) {
-        // Arahkan sesuai peran
         switch ($role) {
-            case 'admin':
-                header("Location: ?route=admin/users");
-                exit;
-            case 'guru':
-                header("Location: ?route=guru/dashboard");
-                exit;
-            case 'siswa':
-                header("Location: ?route=murid/dashboard");
-                exit;
-            default:
-                header("Location: ?route=home");
-                exit;
+            case 'admin': header("Location: ?route=admin/users"); exit;
+            case 'guru': header("Location: ?route=guru/dashboard"); exit;
+            case 'siswa': header("Location: ?route=murid/dashboard"); exit;
+            default: header("Location: ?route=home"); exit;
         }
     }
 }
 
-
 // === ROUTER ===
 switch ($route) {
-    /** ==============================
-     *  LANDING / HOME
-     *  ============================== */
+    // HOME
     case '/':
     case 'home':
         require $basePath . '/resources/views/landing.php';
         break;
 
-
-    /** ==============================
-     *  AUTHENTICATION
-     *  ============================== */
+    // AUTH
     case 'auth/login': $authCtrl->showLogin(); break;
     case 'auth/doLogin': $authCtrl->login(); break;
     case 'auth/register': $authCtrl->showRegister(); break;
     case 'auth/doRegister': $authCtrl->register(); break;
     case 'auth/logout': $authCtrl->logout(); break;
 
-
-    /** ==============================
-     *  ADMIN PANEL
-     *  ============================== */
+    // ADMIN PANEL
     case 'admin/users':
         $authCtrl->requireRole('admin');
         $userCtrl->index();
@@ -122,15 +102,8 @@ switch ($route) {
         $id ? $userCtrl->show($id) : redirectTo('admin/users');
         break;
 
-
-    /** ==============================
-     *  GURU DASHBOARD
-     *  ============================== */
+    // GURU PANEL
     case 'guru/dashboard':
-        $authCtrl->requireRole('guru');
-        $tugasGuruCtrl->index();
-        break;
-
     case 'guru/tugas':
         $authCtrl->requireRole('guru');
         $tugasGuruCtrl->index();
@@ -178,10 +151,7 @@ switch ($route) {
             : redirectTo('guru/pengumpulan');
         break;
 
-
-    /** ==============================
-     *  MURID DASHBOARD
-     *  ============================== */
+    // MURID PANEL
     case 'murid/dashboard':
     case 'murid/tugas':
         $authCtrl->requireRole('siswa');
@@ -200,10 +170,22 @@ switch ($route) {
         $id_tugas ? $kumpulCtrl->submit($id_tugas) : redirectTo('murid/tugas');
         break;
 
+    /** ==========================
+     *  KEBAIASAAN ANAK INDONESIA
+     *  ========================== */
 
-    /** ==============================
-     *  404 HALAMAN TIDAK DITEMUKAN
-     *  ============================== */
+
+    case 'murid/kebiasaan/tambah':
+        $authCtrl->requireRole('siswa');
+        $kebiasaanCtrl->createForm();
+        break;
+
+    case 'murid/kebiasaan/simpan':
+        $authCtrl->requireRole('siswa');
+        $kebiasaanCtrl->store();
+        break;
+
+    // 404
     default:
         http_response_code(404);
         include $basePath . '/resources/views/errors/404.php';

@@ -176,6 +176,14 @@
     <?php endif; ?>
   </main>
 
+  <a href="?route=murid/kebiasaan/tambah"
+     class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+     title="Tambah Kebiasaan Baru">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  </a>
+
   <!-- Modal Logout -->
   <div id="logout-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 mx-auto">
