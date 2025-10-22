@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Siswa</title>
   <!-- ✅ Perbaiki spasi di CDN Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com  "></script>
   <!-- Tambahkan CDN Heroicons -->
-  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.5/24/outline.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.5/20/solid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.5/24/outline.min.js  "></script>
+  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.5/20/solid.min.js  "></script>
   <style>
     /* Opsional: Jika kamu ingin menggunakan ikon sebagai inline SVG, kamu bisa mengatur ukurannya di sini */
     .hero-icon {
@@ -92,7 +92,49 @@
 
   <!-- Main Content -->
   <main class="container mx-auto px-4 sm:px-6 py-20"> <!-- py-20 untuk offset header fixed -->
-    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Daftar Tugas Kamu</h2>
+
+    <!-- Section dengan gradient dan SVG pattern -->
+    <section class="rounded-2xl p-6 sm:p-10 bg-gradient-to-b from-blue-100 via-blue-200 to-blue-300 shadow-inner mb-10 relative overflow-hidden">
+      <!-- SVG Pattern Latar Belakang -->
+      <svg class="absolute inset-0 w-full h-full z-0 opacity-10" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="pattern-icons" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
+            <!-- Ikon 1: Hand Thumb Up (Menghargai) -->
+            <path d="M7.493 18.75c-.425 0-.82-.236-.975-.632A7.48 7.48 0 0 1 6 15.375c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V3a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558-.107 1.282.36 1.681.467.399 1.105.54 1.737.322A7.472 7.472 0 0 0 22.5 9c0 1.657-.48 3.196-1.33 4.43-.85.124-1.695.284-2.53.486a7.471 7.471 0 0 1-1.093 4.13c-.33.46-.75.8-1.212 1.007a4.48 4.48 0 0 0-1.653.38m-2.4 2.375a.75.75 0 0 0 1.5 0V19.5a.75.75 0 0 0-1.5 0v1.625Zm6.75-12.75a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5h-1.5Z" fill="currentColor"/>
+            <!-- Ikon 2: Light Bulb (Menumbuhkan) -->
+            <path d="M11.49 1.79a.75.75 0 0 1 .97 0l4.25 3.5a.75.75 0 0 1 0 1.15l-2.5 2.5a.75.75 0 0 1-.88-.2l-.88-.88v2.69a3 3 0 0 1-2.12.88h-.1a3 3 0 0 1-2.12-.88v-2.7l-.87.88a.75.75 0 0 1-.88.2l-2.5-2.5a.75.75 0 0 1 0-1.15l4.25-3.5ZM15 6.94v-2.7l1.75 1.44-1.75 1.26Zm-6 0 1.75-1.26L9 4.24v2.7ZM8.28 12H6a3 3 0 0 0-3 3v1.5a.75.75 0 0 0 .75.75h.75a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 0 .75.75h6a.75.75 0 0 0 .75-.75v-2.25a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 0 .75-.75V15a3 3 0 0 0-3-3h-2.28a4.49 4.49 0 0 1-.72-6h3.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-1.5a.75.75 0 0 1 .75-.75H15a1.5 1.5 0 0 1 1.5 1.5v1.5a4.5 4.5 0 0 1-4.5 4.5h-.28a4.49 4.49 0 0 1-8.44 0H6a4.5 4.5 0 0 1-4.5-4.5V15a4.5 4.5 0 0 1 4.5-4.5h2.28a4.49 4.49 0 0 0 .72 6Z" fill="currentColor"/>
+            <!-- Ikon 3: User Group (Bergotong Royong) -->
+            <path d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12v-.008Z" fill="currentColor"/>
+            <!-- Ikon 4: Book Open (Gemar Membaca) -->
+            <path d="M11.25 6v.75a4.5 4.5 0 0 1 4.5 4.5 3 3 0 0 0-6 0 3 3 0 0 1-6 0 4.5 4.5 0 0 1 4.5-4.5 3.75 3.75 0 0 1 7.05 1.6 3 3 0 0 1 2.7 2.4 3 3 0 0 1-2.7 2.4 3.75 3.75 0 0 1-7.05 1.6 3 3 0 0 1-2.7-2.4 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7 2.4 3 3 0 0 1 2.7 2.4 3.75 3.75 0 0 1 7.05-1.6 3 3 0 0 1 2.7-2.4 3.75 3.75 0 0 1 7.05 1.6 3 3 0 0 1-2.7 2.4 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7 2.4 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0-2.7 2.4 3 3 0 0 1-2.7 2.4 3.75 3.75 0 0 1-7.05-1.6 3 3 0 0 1-2.7-2.4 3.75 3.75 0 0 1-7.05 1.6 3 3 0 0 1 2.7-2.4 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.7-2.4 3.75 3.75 0 0 0-7.05 1.6 3 3 0 0 0 2.7-2.4 3.75 3.75 0 0 0 7.05 1.6 3 3 0 0 0 2.7 2.4 3.75 3.75 0 0 0 7.05-1.6 3 3 0 0 0-2.7 2.4 3.75 3.75 0 0 0-7.05-1.6 3 3 0 0 0-2.......(path sangat panjang, akan dipotong) -->
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#pattern-icons)" />
+      </svg>
+
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center z-10 relative">Daftar Tugas Kamu</h2>
+
+      <!-- Card Kebiasaan Baru (Static Card before $tugas) -->
+      <div class="max-w-2xl mx-auto mb-10">
+        <div class="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-all border border-gray-100 text-center z-10 relative">
+            <div class="flex flex-col items-center">
+                <!-- Ikon Pin -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-blue-600 mb-3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                </svg>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">7 Kebiasaan Baik</h3>
+                <p class="text-gray-600 text-sm mb-4 max-w-md">
+                    Bangun kebiasaan positif setiap hari dan rasakan peningkatan produktivitasmu yang luar biasa!
+                </p>
+                <a href="?route=murid/kebiasaan/tambah"
+                   class="inline-block w-full sm:w-auto text-center bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Tambah Kebiasaan
+                </a>
+            </div>
+        </div>
+      </div>
+    </section>
+    <!-- /Section dengan gradient dan SVG pattern -->
 
     <?php if (empty($tugas)): ?>
       <div class="bg-white p-8 rounded-xl shadow text-center">
@@ -100,7 +142,13 @@
       </div>
     <?php else: ?>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php foreach ($tugas as $t): ?>
+        <?php foreach ($tugas as $t):
+            // Pastikan $t adalah array sebelum mengakses indeksnya
+            if (!is_array($t)) {
+                error_log("Error: Expected an array for \$t, got " . gettype($t) . ". Data: " . print_r($t, true));
+                continue; // Lewati iterasi ini jika $t bukan array
+            }
+        ?>
           <?php
             // 🔹 Warna status tugas (disesuaikan dengan Tailwind standar)
             $statusTugasColor = match ($t['status_tugas'] ?? '') {
@@ -175,14 +223,6 @@
       </div>
     <?php endif; ?>
   </main>
-
-  <a href="?route=murid/kebiasaan/tambah"
-     class="fixed bottom-6 right-6 bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-     title="Tambah Kebiasaan Baru">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  </a>
 
   <!-- Modal Logout -->
   <div id="logout-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

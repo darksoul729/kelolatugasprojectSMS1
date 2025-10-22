@@ -15,14 +15,14 @@ class AnakKebiasaan {
             makan_sehat,makan_pagi,foto_makan_pagi,makan_siang,foto_makan_siang,makan_malam,foto_makan_malam,
             gemar_belajar,jam_belajar_mulai,jam_belajar_selesai,materi_belajar,
             bermasyarakat,kegiatan_masyarakat,ket_masyarakat,foto_masyarakat,
-            tidur_cepat,jam_tidur,ket_tidur)
+            tidur_cepat,jam_tidur,ket_tidur, nama_lengkap, kelas)
             VALUES
             (:id_user,:bangun_pagi,:jam_bangun,:beribadah,:agama,:sholat_subuh,:sholat_dzuhur,:sholat_ashar,:sholat_maghrib,:sholat_isya,:ibadah_lainnya,
             :berolahraga,:jam_olahraga_mulai,:jam_olahraga_selesai,:foto_olahraga,
             :makan_sehat,:makan_pagi,:foto_makan_pagi,:makan_siang,:foto_makan_siang,:makan_malam,:foto_makan_malam,
             :gemar_belajar,:jam_belajar_mulai,:jam_belajar_selesai,:materi_belajar,
             :bermasyarakat,:kegiatan_masyarakat,:ket_masyarakat,:foto_masyarakat,
-            :tidur_cepat,:jam_tidur,:ket_tidur)";
+            :tidur_cepat,:jam_tidur,:ket_tidur,:nama_lengkap,:kelas)";
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($data);

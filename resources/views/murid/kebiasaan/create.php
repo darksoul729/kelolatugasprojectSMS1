@@ -1,219 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
- <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #f1f5f9;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Header */
-    .navbar {
-      background-color: #1e90ff;
-      color: white;
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar h1 {
-      font-size: 18px;
-      margin: 0;
-    }
-
-    .navbar button {
-      background-color: #dc3545;
-      border: none;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .navbar button:hover {
-      background-color: #b02a37;
-    }
-
-    /* Container */
-    .container {
-      background-color: white;
-      max-width: 800px;
-      margin: 30px auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 20px 30px;
-    }
-
-    .container h2 {
-      font-size: 18px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-progress {
-      background-color: #2dd4bf;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-progress:hover {
-      background-color: #14b8a6;
-    }
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Kebiasaan Anak</title>
+  <script src="https://cdn.tailwindcss.com        "></script>
+  <style>
     .form-section {
-      margin-top: 20px;
+      @apply border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow;
     }
-
-    .form-section label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
+    .info-box {
+      @apply bg-blue-50 border border-blue-100 p-4 rounded-lg mb-6;
     }
-
-    .form-section input[type="date"],
-    .form-section input[type="time"],
-    .form-section input[type="text"],
-    .form-section textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
+    .info-label {
+      @apply font-semibold text-blue-800 text-sm;
     }
-
-    .accordion {
-      background-color: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      margin-top: 10px;
-      overflow: hidden;
+    .info-value {
+      @apply text-blue-900 font-medium;
     }
-
-    .accordion-header {
-      padding: 12px 15px;
-      font-weight: 600;
-      cursor: pointer;
-      background-color: #f3f4f6;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .accordion-content {
-      display: none;
-      padding: 15px;
-      background-color: white;
-    }
-
-    .accordion-content input[type="checkbox"] {
-      margin-bottom: 10px;
-    }
-
-    .accordion.active .accordion-content {
-      display: block;
-    }
-
-    .note {
-      font-size: 13px;
-      color: #6b7280;
-    }
+    .hidden { display: none; }
+    /* Modal loading CSS dihapus */
   </style>
-<body>
-      <div class="navbar">
-    <h1>Dashboard Siswa</h1>
-    <button>Logout</button>
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6 mt-8 mb-12">
+    <h1 class="text-2xl font-bold text-center mb-6 text-blue-700">Form Kebiasaan Anak</h1>
+
+    <form id="kebiasaanForm" action="?route=murid/kebiasaan/simpan" method="POST" enctype="multipart/form-data" class="space-y-6">
+      <!-- Info Box untuk Nama dan Kelas -->
+      <div class="info-box">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span class="info-label">Nama:</span>
+            <span class="info-value break-words"><?= htmlspecialchars($_SESSION['user']['nama_lengkap'] ?? 'Nama Tidak Ditemukan') ?></span>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span class="info-label">Kelas:</span>
+            <span class="info-value break-words"><?= htmlspecialchars($_SESSION['user']['kelas'] ?? 'Kelas Tidak Ditemukan') ?></span>
+          </div>
+        </div>
+      </div>
+      <!-- /Info Box -->
+
+      <!-- Bangun Pagi -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kebiasaan Bangun Pagi</h2>
+        <label class="flex items-center gap-3 mb-3">
+          <input type="checkbox" name="bangun_pagi" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Bangun Pagi</span>
+        </label>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Jam Bangun</label>
+          <input type="time" name="jam_bangun" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Beribadah -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kebiasaan Beribadah</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="beribadah" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Beribadah</span>
+        </label>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="agama" class="block text-sm font-medium text-gray-600 mb-1">Agama</label>
+            <select name="agama" id="agama" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Pilih Agama...</option>
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Buddha">Buddha</option>
+                <option value="Konghucu">Konghucu</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div id="ibadahLainnyaContainer" class="hidden">
+            <label for="ibadah_lainnya" class="block text-sm font-medium text-gray-600 mb-1">Ibadah Lainnya</label>
+            <input type="text" id="ibadah_lainnya" name="ibadah_lainnya" placeholder="Jelaskan ibadah lainnya" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+
+        <div id="sholatContainer" class="mt-4 hidden">
+          <label class="block text-sm font-medium text-gray-600 mb-2">Sholat Wajib (jika beragama Islam)</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="sholat_subuh" class="accent-blue-600 h-4 w-4">
+              <span class="text-gray-700">Subuh</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="sholat_dzuhur" class="accent-blue-600 h-4 w-4">
+              <span class="text-gray-700">Dzuhur</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="sholat_ashar" class="accent-blue-600 h-4 w-4">
+              <span class="text-gray-700">Ashar</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="sholat_maghrib" class="accent-blue-600 h-4 w-4">
+              <span class="text-gray-700">Maghrib</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" name="sholat_isya" class="accent-blue-600 h-4 w-4">
+              <span class="text-gray-700">Isya</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Olahraga -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kebiasaan Berolahraga</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="berolahraga" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Berolahraga</span>
+        </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jam Mulai</label>
+            <input type="time" name="jam_olahraga_mulai" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Mulai">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jam Selesai</label>
+            <input type="time" name="jam_olahraga_selesai" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Selesai">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Foto Olahraga</label>
+          <!-- Atribut 'required' dihapus -->
+          <input type="file" name="foto_olahraga" accept="image/*" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Makan Sehat -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kebiasaan Makan Sehat</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="makan_sehat" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Makan Sehat</span>
+        </label>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Makan Pagi</label>
+            <input type="text" name="makan_pagi" placeholder="Menu pagi" class="border border-gray-300 p-2 rounded-lg w-full mb-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Foto</label>
+            <!-- Atribut 'required' dihapus -->
+            <input type="file" name="foto_makan_pagi" accept="image/*" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Makan Siang</label>
+            <input type="text" name="makan_siang" placeholder="Menu siang" class="border border-gray-300 p-2 rounded-lg w-full mb-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Foto</label>
+            <!-- Atribut 'required' dihapus -->
+            <input type="file" name="foto_makan_siang" accept="image/*" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Makan Malam</label>
+            <input type="text" name="makan_malam" placeholder="Menu malam" class="border border-gray-300 p-2 rounded-lg w-full mb-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <label class="block text-sm font-medium text-gray-600 mb-1">Foto</label>
+            <!-- Atribut 'required' dihapus -->
+            <input type="file" name="foto_makan_malam" accept="image/*" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Gemar Belajar -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Gemar Belajar</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="gemar_belajar" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Gemar Belajar</span>
+        </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jam Mulai</label>
+            <input type="time" name="jam_belajar_mulai" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Mulai">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jam Selesai</label>
+            <input type="time" name="jam_belajar_selesai" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Selesai">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Materi yang Dipelajari</label>
+          <input type="text" name="materi_belajar" placeholder="Contoh: Matematika Bab 3" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Bermasyarakat -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kegiatan Bermasyarakat</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="bermasyarakat" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Bermasyarakat</span>
+        </label>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-600 mb-1">Nama Kegiatan</label>
+          <input type="text" name="kegiatan_masyarakat" placeholder="Contoh: Gotong Royong" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-600 mb-1">Keterangan</label>
+          <textarea name="ket_masyarakat" placeholder="Ceritakan kegiatanmu..." class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Foto Kegiatan</label>
+          <!-- Atribut 'required' dihapus -->
+          <input type="file" name="foto_masyarakat" accept="image/*" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+      </div>
+
+      <!-- Tidur Cepat -->
+      <div class="form-section">
+        <h2 class="font-semibold text-blue-600 mb-3 text-lg">Kebiasaan Tidur Cepat</h2>
+        <label class="flex items-center gap-3 mb-4">
+          <input type="checkbox" name="tidur_cepat" class="accent-blue-600 h-5 w-5">
+          <span class="text-gray-700">Tidur Cepat</span>
+        </label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jam Tidur</label>
+            <input type="time" name="jam_tidur" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Keterangan</label>
+            <input type="text" name="ket_tidur" placeholder="Contoh: Tidur di kamar sendiri" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Submit dan Kembali -->
+      <div class="flex justify-between items-center pt-6">
+        <button type="button" onclick="window.location.href='?route=murid/dashboard'"
+                class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium">
+          Kembali ke Dashboard
+        </button>
+        <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
+          Simpan Kebiasaan
+        </button>
+      </div>
+      <!-- /Tombol Submit dan Kembali -->
+
+    </form>
   </div>
 
-  <div class="container">
-    <button class="btn-progress">📊 Lihat Grafik Progres Bulan Ini</button>
-
-    <div class="form-section">
-      <h2>📝 Buat atau Perbarui Laporan Harian</h2>
-
-      <label for="tanggal">Pilih Tanggal Laporan:</label>
-      <input type="date" id="tanggal">
-    </div>
-
-    <div class="accordion">
-      <div class="accordion-header">1. Kebiasaan Bangun Pagi</div>
-      <div class="accordion-content">
-        <label><input type="checkbox"> Saya melakukan kebiasaan ini</label>
-        <label>Pukul Berapa Bangun?</label>
-        <input type="time" placeholder="--:--">
-        <label>Keterangan</label>
-        <input type="text" placeholder="Contoh: Langsung merapikan tempat tidur">
-      </div>
-    </div>
-
-    <div class="accordion">
-      <div class="accordion-header">2. Kebiasaan Beribadah</div>
-      <div class="accordion-content">
-        <label><input type="checkbox"> Saya melakukan kebiasaan ini</label>
-        <label>Jenis Ibadah</label>
-        <input type="text" placeholder="Contoh: Shalat Subuh, Dzikir pagi">
-        <label>Keterangan</label>
-        <textarea rows="2" placeholder="Tambahkan catatan kegiatan ibadah"></textarea>
-      </div>
-    </div>
-
-    <div class="accordion">
-      <div class="accordion-header">3. Kebiasaan Berolahraga</div>
-      <div class="accordion-content">
-        <label><input type="checkbox"> Saya melakukan kebiasaan ini</label>
-        <label>Jenis Olahraga</label>
-        <input type="text" placeholder="Contoh: Lari pagi, push up">
-        <label>Durasi</label>
-        <input type="text" placeholder="Contoh: 30 menit">
-      </div>
-    </div>
-
-    <div class="accordion">
-      <div class="accordion-header">4. Kebiasaan Makan Sehat</div>
-      <div class="accordion-content">
-        <label><input type="checkbox"> Saya melakukan kebiasaan ini</label>
-        <label>Menu Makanan</label>
-        <input type="text" placeholder="Contoh: Sayur, buah, susu, air putih">
-        <label>Keterangan</label>
-        <textarea rows="2" placeholder="Tuliskan kebiasaan makan sehat hari ini"></textarea>
-      </div>
-    </div>
-
-    <div class="accordion">
-      <div class="accordion-header">5. Kebiasaan Gemar Belajar</div>
-      <div class="accordion-content">
-        <label><input type="checkbox"> Saya melakukan kebiasaan ini</label>
-        <label>Materi Belajar</label>
-        <input type="text" placeholder="Contoh: Matematika, Bahasa Inggris">
-        <label>Durasi</label>
-        <input type="text" placeholder="Contoh: 1 jam">
-      </div>
-    </div>
-
-    <p class="note" style="margin-top: 20px;">Isi laporan harian dengan jujur sesuai aktivitas yang kamu lakukan.</p>
-  </div>
+  <!-- Modal Loading dihapus -->
 
   <script>
-    // Script untuk fungsi accordion
-    const accordions = document.querySelectorAll('.accordion-header');
-    accordions.forEach(header => {
-      header.addEventListener('click', () => {
-        const parent = header.parentElement;
-        parent.classList.toggle('active');
-      });
+    document.addEventListener('DOMContentLoaded', function () {
+      const agamaSelect = document.getElementById('agama');
+      const sholatContainer = document.getElementById('sholatContainer');
+      const ibadahLainnyaContainer = document.getElementById('ibadahLainnyaContainer');
+
+      // Fungsi untuk menampilkan/menyembunyikan bagian berdasarkan pilihan agama
+      function toggleIbadahFields() {
+        const selectedValue = agamaSelect.value;
+        if (selectedValue === 'Islam') {
+          sholatContainer.classList.remove('hidden');
+          ibadahLainnyaContainer.classList.add('hidden');
+          // Kosongkan field ibadah_lainnya jika Islam dipilih
+          document.getElementById('ibadah_lainnya').value = '';
+        } else if (selectedValue && selectedValue !== 'Lainnya') {
+          sholatContainer.classList.add('hidden');
+          ibadahLainnyaContainer.classList.remove('hidden');
+          // Kosongkan checkbox sholat jika agama lain dipilih
+          document.querySelectorAll('input[name^="sholat_"]').forEach(checkbox => checkbox.checked = false);
+        } else {
+          sholatContainer.classList.add('hidden');
+          ibadahLainnyaContainer.classList.add('hidden');
+          document.getElementById('ibadah_lainnya').value = '';
+          document.querySelectorAll('input[name^="sholat_"]').forEach(checkbox => checkbox.checked = false);
+        }
+      }
+
+      // Tambahkan event listener ke dropdown agama
+      agamaSelect.addEventListener('change', toggleIbadahFields);
+
+      // Event listener untuk submit form dihapus karena modal loading dihapus
     });
   </script>
+
 </body>
 </html>
