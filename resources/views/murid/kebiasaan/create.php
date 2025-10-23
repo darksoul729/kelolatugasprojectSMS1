@@ -65,24 +65,25 @@
         </label>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="agama" class="block text-sm font-medium text-gray-600 mb-1">Agama</label>
-            <select name="agama" id="agama" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Pilih Agama...</option>
-                <option value="Islam">Islam</option>
-                <option value="Kristen">Kristen</option>
-                <option value="Katolik">Katolik</option>
-                <option value="Hindu">Hindu</option>
-                <option value="Buddha">Buddha</option>
-                <option value="Konghucu">Konghucu</option>
-                <option value="Lainnya">Lainnya</option>
-            </select>
-          </div>
-          <div id="ibadahLainnyaContainer" class="hidden">
-            <label for="ibadah_lainnya" class="block text-sm font-medium text-gray-600 mb-1">Ibadah Lainnya</label>
-            <input type="text" id="ibadah_lainnya" name="ibadah_lainnya" placeholder="Jelaskan ibadah lainnya" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-          </div>
-        </div>
+  <div>
+    <label for="agama" class="block text-sm font-medium text-gray-600 mb-1">Agama</label>
+    <select name="agama" id="agama" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        <option value="">Pilih Agama...</option>
+        <option value="Islam">Islam</option>
+        <option value="Kristen">Kristen</option>
+        <option value="Katolik">Katolik</option>
+        <option value="Hindu">Hindu</option>
+        <option value="Buddha">Buddha</option>
+        <option value="Konghucu">Konghucu</option>
+        <option value="Lainnya">Lainnya</option>
+    </select>
+  </div>
+  <div id="ibadahLainnyaContainer" class="hidden">
+    <label for="ibadah_lainnya" class="block text-sm font-medium text-gray-600 mb-1">Ibadah Lainnya</label>
+    <input type="text" id="ibadah_lainnya" name="ibadah_lainnya" placeholder="Jelaskan ibadah lainnya" class="border border-gray-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <p id="ibadahWarning" class="text-sm text-red-500 mt-1 hidden">Mohon isi ibadah lainnya atau pilih opsi lain.</p>
+  </div>
+</div>
 
         <div id="sholatContainer" class="mt-4 hidden">
           <label class="block text-sm font-medium text-gray-600 mb-2">Sholat Wajib (jika beragama Islam)</label>
@@ -231,6 +232,8 @@
           </div>
         </div>
       </div>
+
+     
 
       <!-- Tombol Submit dan Kembali -->
       <div class="flex justify-between items-center pt-6">

@@ -1,3 +1,7 @@
+<?php
+include __DIR__ . '/../components/edit-modal-user.php'
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -129,6 +133,12 @@
                     <?= htmlspecialchars(ucfirst($u['peran'])) ?>
                 </span>
             </td>
+             <td class="py-3 px-4 border border-gray-200 text-center">
+        <button onclick='openEditUserModal(<?= json_encode($u) ?>)'
+                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">
+            Edit
+        </button>
+    </td>
           </tr>
           <?php endforeach; else: ?>
           <tr>

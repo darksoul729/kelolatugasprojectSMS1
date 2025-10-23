@@ -27,7 +27,7 @@ class Tugas {
         ':id_kategori'           => $data['id_kategori'],
         ':tanggal_mulai'         => $data['tanggal_mulai'] ?? date('Y-m-d H:i:s'),
         ':tanggal_deadline'      => $data['tanggal_deadline'],
-        ':durasi_estimasi'       => $data['durasi_estimasi'] ?? null,
+        ':durasi_estimasi'      => $data['durasi_estimasi'] ?? null,
         ':poin_nilai'            => $data['poin_nilai'] ?? 100,
         ':instruksi_pengumpulan' => $data['instruksi_pengumpulan'] ?? null,
         ':lampiran_guru'         => $data['lampiran_guru'] ?? null,
@@ -45,6 +45,17 @@ class Tugas {
             'success' => false,
             'message' => 'Gagal membuat tugas.'
         ];
+    }
+}
+
+public function getByKelas($kelas) {
+    try {
+        $sql = "SELECT * FROM {$this->table} WHERE kelas = :kelas"; // hapus ORDER BY jika tidak ada created_at
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':kelas' => $kelas]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        die("Gagal mengambil data tugas: " . $e->getMessage());
     }
 }
 

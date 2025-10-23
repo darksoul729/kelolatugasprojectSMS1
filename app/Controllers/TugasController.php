@@ -1,42 +1,72 @@
 <?php
 // app/Controllers/TugasController.php
 require_once __DIR__ . '/../Models/Tugas.php';
+require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Models/KategoriTugas.php';
+require_once __DIR__ . '/../Models/AnakKebiasaan.php';
 $basePath = dirname(__DIR__, 2); // dari app/Controllers ke root project
 class TugasController {
     private $pdo;
     private $tugasModel;
     private $kategoriModel;
     private $basePath;
+    private $userModel;
+    private $anakKebiasaaan;
 
     public function __construct($pdo) {
         $this->pdo = $pdo;
         $this->tugasModel = new Tugas($pdo);
         $this->kategoriModel = new KategoriTugas($pdo);
+        $this->anakKebiasaaan = new AnakKebiasaan($pdo);
+        $this->userModel = new User($pdo);
         $this->basePath = dirname(__DIR__, 2); // naik 2 level dari /app/Controllers
     }
 
     /**
      * Dashboard Guru
      */
-    public function index() {
-        $user = $_SESSION['user'] ?? null;
+   public function index() {
+    $user = $_SESSION['user'] ?? null;
 
-        if (!$user || $user['peran'] !== 'guru') {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya guru yang dapat mengakses halaman ini.'];
-            header("Location: /index.php");
-            exit;
-        }
-
-        $tugas = $this->tugasModel->allByGuru($user['id_user']);
-        $kategori = $this->kategoriModel->all();
-
-        $stmtSiswa = $this->pdo->query("SELECT COUNT(*) AS total FROM users WHERE peran = 'siswa'");
-        $totalSiswa = $stmtSiswa->fetch()['total'] ?? 0;
-        $totalTugas = count($tugas);
-
-        $view = include $this->basePath . '/resources/views/guru/dashboard_guru.php';
+    if (!$user || $user['peran'] !== 'guru') {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya guru yang dapat mengakses halaman ini.'];
+        header("Location: /index.php");
+        exit;
     }
+
+    $wali_kelas = $user['wali_kelas'];
+
+    // Ambil data anak sesuai kelas wali
+    $stmtAnak = $this->pdo->query("SELECT * FROM anak_kebiasaan WHERE kelas = '$wali_kelas'");
+    $anakkebiasaan = $stmtAnak->fetchAll(PDO::FETCH_ASSOC);
+
+    // Ambil tugas sesuai guru yang login
+    $stmtTugas = $this->pdo->query("SELECT * FROM tugas WHERE id_guru = {$user['id_user']}");
+    $tugas = $stmtTugas->fetchAll(PDO::FETCH_ASSOC);
+
+    // Ambil kategori
+    $kategori = $this->kategoriModel->all();
+
+
+    $siswa = $this->userModel->getSiswaByKelas($wali_kelas);
+
+    // Total siswa di kelas wali
+    $stmtSiswa = $this->pdo->query("SELECT COUNT(*) AS total FROM users WHERE peran = 'siswa' AND wali_kelas = '$wali_kelas'");
+    $totalSiswa = $stmtSiswa->fetch()['total'] ?? 0;
+
+    $totalTugas = count($tugas);
+
+    include $this->basePath . '/resources/views/guru/dashboard_guru.php';
+}
+
+
+    public function getByKelas($kelas) {
+    // Ambil data tugas dari model, bukan dari controller lagi
+    $tugas = $this->tugasModel->getByKelas($kelas); 
+    include __DIR__.'/../../resources/views/components/tabel_biasa.php';
+}
+
+
 
     /**
      * Tambah Tugas
@@ -218,7 +248,4 @@ class TugasController {
         header("Location: /routes/web.php?route=guru/dashboard");
         exit;
     }
-
-   
-
 }

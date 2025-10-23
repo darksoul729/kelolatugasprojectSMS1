@@ -15,6 +15,33 @@ class AdminController {
     }
 
     /**
+ * 🟡 Edit User (mengambil data untuk modal)
+ */
+public function edit($id_user) {
+    $user = $this->userModel->findById($id_user);
+    if (!$user) {
+        echo json_encode(['success' => false, 'message' => 'Pengguna tidak ditemukan.']);
+        exit;
+    }
+    // Kembalikan data user sebagai JSON agar bisa di-fill modal JS
+    echo json_encode(['success' => true, 'data' => $user]);
+    exit;
+}
+
+/**
+ * 🟢 Update user (submit dari modal)
+ */
+public function update($id_user, $postData) {
+    $result = $this->userModel->editUser($id_user, $postData);
+    $_SESSION['message'] = [
+        'type' => $result['success'] ? 'success' : 'danger',
+        'text' => $result['message']
+    ];
+    header("Location: ?route=admin/users");
+    exit;
+}
+
+    /**
      * 🟢 Dashboard Admin - menampilkan daftar semua user
      */
  public function index() {
@@ -45,6 +72,8 @@ class AdminController {
 
         include $viewPath;
     }
+
+    
 
 
     /**

@@ -13,50 +13,26 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Gaya tambahan untuk efek sheet/tab */
-        .section-tab {
-            @apply px-4 py-3 font-medium text-sm rounded-t-lg border-b-2 transition-colors duration-200 cursor-pointer;
-        }
-        .section-tab--inactive {
-            @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
-        }
-        .section-tab--active {
-            @apply border-blue-500 text-blue-600;
-        }
     </style>
     <script>
-        // Fungsi untuk modal profil
-        async function openProfileModal() {
-            const modal = document.getElementById('profile-modal');
-            // Pastikan konten hanya dimuat sekali
-            if (modal.children.length === 0) {
-                try {
-                    const response = await fetch('/resources/views/components/profile-modal.php');
-                    const html = await response.text();
-                    modal.innerHTML = html;
-                } catch (error) {
-                    console.error('Gagal memuat modal profil:', error);
-                    modal.innerHTML = '<div class="bg-white p-6 rounded-lg">Gagal memuat profil.</div>';
-                }
-            }
-            modal.classList.remove('hidden');
-        }
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-        }
-
-        // Fungsi untuk modal kategori
         function openCategoryModal() {
             document.getElementById('category-modal').classList.remove('hidden');
         }
         function closeCategoryModal() {
             document.getElementById('category-modal').classList.add('hidden');
         }
+        function openLogoutModal() {
+            document.getElementById('logout-modal').classList.remove('hidden');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logout-modal').classList.add('hidden');
+        }
 
         // Auto-hide notification
         document.addEventListener('DOMContentLoaded', () => {
             const notif = document.getElementById('notifMessage');
             if (notif) {
+                // Tambahkan sedikit delay sebelum memulai fade-out untuk efek yang lebih halus
                 setTimeout(() => {
                     notif.style.opacity = '0';
                     setTimeout(() => notif.remove(), 500); // Hapus setelah animasi fade-out selesai
@@ -98,21 +74,21 @@
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Dashboard Guru</h1>
             <p class="text-gray-600 mt-1">
-                Selamat datang kembali, <?= htmlspecialchars($user['nama_lengkap'] ?? $user['username'] ?? 'Guru') ?> 👋
+                Selamat datang kembali, <?= htmlspecialchars($_SESSION['user']['nama_lengkap'] ?? $_SESSION['user']['username'] ?? 'Guru') ?> 👋
             </p>
         </div>
 
         <div class="flex flex-wrap gap-2">
             <a href="?route=guru/tugas/tambah"
-               class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 shadow transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+               class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 shadow transition">
                 + Buat Tugas Baru
             </a>
-            <button onclick="openProfileModal()"
-                    class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                </svg>
-            </button>
+<button onclick="openProfileModal()"
+        class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+  </svg>
+</button>
         </div>
     </header>
 
@@ -133,7 +109,7 @@
                 </div>
                 <div>
                     <p class="text-gray-500 text-sm">Total Kategori</p>
-                    <p class="text-xl font-bold text-gray-800"><?= count($kategori) ?></p>
+                    <p class="text-xl font-bold text-gray-800"><?= count($kategori ?? []) ?></p>
                 </div>
             </div>
         </div>
@@ -148,7 +124,7 @@
                 </div>
                 <div>
                     <p class="text-gray-500 text-sm">Total Tugas Dibuat</p>
-                    <p class="text-xl font-bold text-gray-800"><?= count($tugas) ?></p>
+                    <p class="text-xl font-bold text-gray-800"><?= count($tugas ?? []) ?></p>
                 </div>
             </div>
         </div>
@@ -163,40 +139,52 @@
                 </div>
                 <div>
                     <p class="text-gray-500 text-sm">Akun Anda</p>
-                    <p class="text-xl font-bold text-gray-800"><?= htmlspecialchars($user['nama_lengkap'] ?? '-') ?></p>
+                    <p class="text-xl font-bold text-gray-800"><?= htmlspecialchars($_SESSION['user']['nama_lengkap'] ?? '-') ?></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Tab Sheet -->
-<div class="bg-white rounded-xl shadow flex overflow-hidden mb-6">
-    <button id="tab-tugas" class="flex-1 text-center px-4 py-2 bg-blue-500 text-white font-medium transition">
-        Tabel Tugas
-    </button>
-    <button id="tab-kebiasaan" class="flex-1 text-center px-4 py-2 bg-gray-100 text-gray-700 font-medium transition hover:bg-gray-200">
-        Tabel Kebiasaan
-    </button>
-    <button id="tab-siswa" class="flex-1 text-center px-4 py-2 bg-gray-100 text-gray-700 font-medium transition hover:bg-gray-200">
-        Tabel Siswa
-    </button>
-</div>
-
-    <!-- Sheet Content -->
-    <div id="sheet-tugas" class="fade-in">
-        <?php include_once __DIR__ . '/../components/tabel_biasa.php'; ?>
-    </div>
-    <div id="sheet-kebiasaan" class="fade-in hidden">
-        <?php include_once __DIR__ . '/../components/tabel_kebiasaan.php'; ?>
-    </div>
-    <div id="sheet-siswa" class="fade-in hidden">
-        <?php include_once __DIR__ . '/../components/tabel_siswa.php'; ?>
-    </div>
-
-    <div id="ringkasan-status" class="mt-10">
-        <h2 class="text-xl md:text-2xl font-bold mb-6 text-gray-800">Ringkasan Status Kebiasaan Siswa</h2>
-        <?php include_once __DIR__ . '/../components/ringkasan-status-kebiasaan.php'; ?>
-    </div>
+    <!-- Daftar Tugas -->
+    <section>
+        <h2 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4">Daftar Tugas Anda</h2>
+        <a href="?route=tabel"> 7 Kebiasaaan Anak</a>
+        <div class="bg-white rounded-xl shadow overflow-hidden table-wrapper">
+            <?php if (!empty($kelas)): ?>
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Nama Siswa</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kelas Siswa</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Catatan Guru</th>
+                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <?php foreach ($kelas as $i => $t): ?>
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-4 py-3 text-gray-600"><?= $i + 1 ?></td>
+                                <td class="px-4 py-3 font-medium text-gray-900"><?= htmlspecialchars($t['user']) ?></td>
+                                <td class="px-4 py-3 font-medium text-gray-900"><?= htmlspecialchars($t['kelas']) ?></td>
+                                <td class="px-4 py-3 text-gray-600"><?= htmlspecialchars($t['nama_kategori'] ?? '-') ?></td>
+                                <td class="px-4 py-3 text-center">
+                                    <a href="?route=guru/tugas/detail&id=<?= $t['id_tugas'] ?>"
+                                       class="px-3 py-1 bg-green-500 text-white text-xs rounded-md hover:bg-green-600 transition">
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <div class="px-6 py-10 text-center text-gray-500">
+                    Belum ada tugas yang Anda buat.
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 </div>
 
 <!-- Modal: Jumlah Tugas per Kategori -->
@@ -213,18 +201,25 @@
             </div>
         </div>
         <div class="p-5">
-            <?php if(!empty($kategori)): ?>
+            <?php if (!empty($kategori)): ?>
                 <ul class="space-y-3">
-                    <?php foreach($kategori as $kat):
+                    <?php foreach ($kategori as $kat): ?>
+                        <?php
                         $jumlah = 0;
-                        foreach($tugas ?? [] as $t) {
-                            if(($t['id_kategori'] ?? null) == ($kat['id_kategori'] ?? null)) $jumlah++;
+                        if (!empty($tugas)) {
+                            foreach ($tugas as $t) {
+                                if (($t['id_kategori'] ?? null) == ($kat['id_kategori'] ?? null)) {
+                                    $jumlah++;
+                                }
+                            }
                         }
-                    ?>
-                    <li class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg">
-                        <span class="font-medium text-gray-700"><?= htmlspecialchars($kat['nama_kategori']) ?></span>
-                        <span class="bg-blue-100 text-blue-700 text-sm font-semibold px-2 py-1 rounded-full"><?= $jumlah ?> tugas</span>
-                    </li>
+                        ?>
+                        <li class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-lg">
+                            <span class="font-medium text-gray-700"><?= htmlspecialchars($kat['nama_kategori']) ?></span>
+                            <span class="bg-blue-100 text-blue-700 text-sm font-semibold px-2 py-1 rounded-full">
+                                <?= $jumlah ?> tugas
+                            </span>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             <?php else: ?>
@@ -234,78 +229,35 @@
     </div>
 </div>
 
-<!-- Modal Profil -->
 <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <!-- Konten modal profil akan dimuat di sini oleh JavaScript -->
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ===== Elemen Tab & Sheet =====
-    const tabs = {
-        'tugas': {
-            button: document.getElementById('tab-tugas'),
-            sheet: document.getElementById('sheet-tugas')
-        },
-        'kebiasaan': {
-            button: document.getElementById('tab-kebiasaan'),
-            sheet: document.getElementById('sheet-kebiasaan')
-        },
-        'siswa': {
-            button: document.getElementById('tab-siswa'),
-            sheet: document.getElementById('sheet-siswa')
-        }
-    };
-
-    
-
-   function activateTab(tabKey) {
-    for (const key in tabs) {
-        const { button, sheet } = tabs[key];
-        if (key === tabKey) {
-            // Aktifkan tab
-            button.classList.add('bg-blue-500', 'text-white');
-            button.classList.remove('bg-gray-100', 'text-gray-700');
-            sheet.classList.remove('hidden');
-        } else {
-            // Nonaktifkan tab
-            button.classList.remove('bg-blue-500', 'text-white');
-            button.classList.add('bg-gray-100', 'text-gray-700');
-            sheet.classList.add('hidden');
-        }
+  // Buka modal profil & load konten dari file terpisah
+  async function openProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    if (modal.innerHTML.trim() === '') {
+      try {
+      const response = await fetch('/resources/views/components/profile-modal.php');
+        const html = await response.text();
+        modal.innerHTML = html;
+      } catch (error) {
+        console.error('Gagal memuat modal profil:', error);
+        modal.innerHTML = '<div class="bg-white p-6 rounded-lg">Gagal memuat profil.</div>';
+      }
     }
+    modal.classList.remove('hidden');
+  }
 
-    // ===== Kontrol ringkasan-status =====
-    const ringkasan = document.getElementById('ringkasan-status');
-    if (ringkasan) {
-        if (tabKey === 'kebiasaan') {
-            ringkasan.classList.remove('hidden');
-        } else {
-            ringkasan.classList.add('hidden');
-        }
-    }
-}
+  // Tutup modal profil
+  function closeProfileModal() {
+    document.getElementById('profile-modal').classList.add('hidden');
+  }
 
-    // ===== Pasang event listener untuk setiap tab =====
-    tabs['tugas'].button.addEventListener('click', () => activateTab('tugas'));
-    tabs['kebiasaan'].button.addEventListener('click', () => activateTab('kebiasaan'));
-    tabs['siswa'].button.addEventListener('click', () => activateTab('siswa'));
-
-    // ===== Tutup Profile Modal saat klik di luar =====
-    const profileModal = document.getElementById('profile-modal');
-    if(profileModal){
-        profileModal.addEventListener('click', (e) => {
-            if (e.target.id === 'profile-modal') closeProfileModal();
-        });
-    }
-
-    // ===== Expose fungsi global =====
-    window.openProfileModal = openProfileModal;
-    window.closeProfileModal = closeProfileModal;
-    window.openCategoryModal = openCategoryModal;
-    window.closeCategoryModal = closeCategoryModal;
-});
+  // Tutup modal saat klik di luar konten
+  document.getElementById('profile-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'profile-modal') closeProfileModal();
+  });
 </script>
-
 </body>
 </html>
