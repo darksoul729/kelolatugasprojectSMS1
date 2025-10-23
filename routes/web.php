@@ -26,6 +26,7 @@ require_once $basePath . '/app/Controllers/PengumpulanController.php';
 require_once $basePath . '/app/Controllers/PenilaianController.php';
 require_once $basePath . '/app/Controllers/AnakKebiasaanController.php'; // ✅ baru
 require_once $basePath . '/app/Controllers/SiswaController.php';
+require_once $basePath . '/app/Controllers/LandingController.php';
 
 // === FILE STATIC (upload) ===
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -61,6 +62,7 @@ $kumpulCtrl      = new PengumpulanController($pdo);
 $nilaiCtrl       = new PenilaianController($pdo);
 $kebiasaanCtrl   = new AnakKebiasaanController($pdo); // ✅ baru\
 $siswaCtrl       = new SiswaController($pdo);
+$landingCtrl     = new LandingController($pdo);
 
 // === BLOKIR LOGIN / REGISTER UNTUK YANG SUDAH LOGIN ===
 if (isset($_SESSION['user'])) {
@@ -84,6 +86,12 @@ switch ($route) {
     case 'home':
         require $basePath . '/resources/views/landing.php';
         break;
+    
+    case 'landing/kirim_pesan':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $landingCtrl->kirim_pesan();
+        }
+        break;
 
     // AUTH
     case 'auth/login': $authCtrl->showLogin(); break;
@@ -91,11 +99,17 @@ switch ($route) {
     case 'auth/register': $authCtrl->showRegister(); break;
     case 'auth/doRegister': $authCtrl->register(); break;
     case 'auth/logout': $authCtrl->logout(); break;
+    case 'auth/menunggu-konfirmasi': $authCtrl->showMenungguKonfirmasi(); break;
 
     // ADMIN PANEL
     case 'admin/users':
         $authCtrl->requireRole('admin');
         $userCtrl->index();
+        break;
+
+    case 'admin/users/setrole':
+        $authCtrl->requireRole('admin');
+        $userCtrl->setrole();
         break;
 
     case 'admin/user/detail':
@@ -114,6 +128,19 @@ switch ($route) {
             if ($id) $userCtrl->update($id, $_POST);
         }
         break;
+    case 'admin/users/delete':
+        $authCtrl->requireRole('admin');
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $id ? $userCtrl->delete($id) : redirectTo('admin/users');
+        break;
+    
+  case 'admin/users/verify':
+    $authCtrl->requireRole('admin');
+    $userCtrl->verify(); // controller yang akan ambil $_POST langsung
+    break;
+
+    
+    
 
     // GURU PANEL
     case 'guru/dashboard':
@@ -164,24 +191,23 @@ switch ($route) {
             : redirectTo('guru/pengumpulan');
         break;
 
+  case 'guru/kebiasaan/ringkasan-json':
+    // ✅ Ambil data JSON ringkasan bulanan seluruh siswa di kelas wali_kelas
+    $authCtrl->requireRole('guru');
+    $kebiasaanCtrl->ringkasanKebiasaanPerBulanGuru();
+    break;
 
-    case 'guru/lihat_kebiasaan_status':
-        $authCtrl->requireRole('guru');
-        $kelasWali = $_SESSION['user']['wali_kelas'] ?? '';
-        if (trim($kelasWali) === '') {
-            $_SESSION['message'] = ['type'=>'warning','text'=>'Guru belum memiliki kelas yang diasuh.'];
-            header("Location: /index.php");
-            exit;
+
+    case 'guru/kebiasaan/ringkasan-view':
+        // tampilkan halaman ringkasan kebiasaan kelas
+        $kelas = $_GET['kelas'] ?? ($_SESSION['user']['wali_kelas'] ?? null);
+        if ($kelas) {
+            $kebiasaanCtrl->listKebiasaanByKelas($kelas);
+        } else {
+            echo "<p>Kelas tidak ditemukan</p>";
         }
+        break;
 
-        // Panggil controller untuk tampil kebiasaan
-        $kebiasaanCtrl->listKebiasaanByKelas($kelasWali);
-        break;
-    case 'guru/status_kebiasaan':
-        $authCtrl->requireRole('guru');
-        $kebiasaanCtrl->ringkasanKebiasaanPerBulan($datakebiasaan);
-        break;
-               
     case 'kebiasaan/anak':
         $authCtrl->requireRole('guru');
         break;    

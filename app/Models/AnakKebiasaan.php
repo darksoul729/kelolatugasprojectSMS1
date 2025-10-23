@@ -11,7 +11,14 @@ class AnakKebiasaan {
     $sql = "
         SELECT 
             DISTINCT DATE(created_at) AS tanggal,
-            DAYNAME(created_at) AS hari
+            DAYNAME(created_at) AS hari,
+            bangun_pagi,
+            beribadah,
+            berolahraga,
+            makan_sehat,
+            gemar_belajar,
+            bermasyarakat,
+            tidur_cepat
         FROM anak_kebiasaan
         WHERE id_user = :id_user
           AND MONTH(created_at) = :bulan
@@ -117,6 +124,88 @@ public function getDetailByDate($id_user, $tanggal) {
     ]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+
+ // ✅ Statistik bulanan per siswa (untuk murid sendiri)
+    public function getMonthlyStatsByUser($id_user, $bulan, $tahun) {
+        $sql = "
+            SELECT 
+                COUNT(id) AS total_laporan,
+                SUM(bangun_pagi) AS total_bangun_pagi,
+                SUM(beribadah) AS total_beribadah,
+                SUM(berolahraga) AS total_berolahraga,
+                SUM(makan_sehat) AS total_makan_sehat,
+                SUM(gemar_belajar) AS total_gemar_belajar,
+                SUM(bermasyarakat) AS total_bermasyarakat,
+                SUM(tidur_cepat) AS total_tidur_cepat
+            FROM anak_kebiasaan
+            WHERE id_user = :id_user
+              AND MONTH(created_at) = :bulan
+              AND YEAR(created_at) = :tahun
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':id_user' => $id_user,
+            ':bulan' => $bulan,
+            ':tahun' => $tahun
+        ]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // ✅ Detail laporan per siswa dalam 1 bulan (untuk modal detail)
+    public function getMonthlyDetailsByUser($id_user, $bulan, $tahun) {
+        $sql = "
+            SELECT 
+                id,
+                DATE_FORMAT(created_at, '%d %M %Y %H:%i') AS tanggal_laporan,
+                bangun_pagi, beribadah, berolahraga, makan_sehat, 
+                gemar_belajar, bermasyarakat, tidur_cepat
+            FROM anak_kebiasaan
+            WHERE id_user = :id_user
+              AND MONTH(created_at) = :bulan
+              AND YEAR(created_at) = :tahun
+            ORDER BY created_at DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':id_user' => $id_user,
+            ':bulan' => $bulan,
+            ':tahun' => $tahun
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // ✅ Rekap seluruh siswa satu kelas (untuk guru wali kelas)
+    public function getMonthlySummaryByClass($kelas, $bulan, $tahun) {
+        $sql = "
+            SELECT 
+                u.id_user,
+                u.nama_lengkap,
+                u.kelas,
+                COUNT(k.id) AS total_laporan,
+                SUM(k.bangun_pagi) AS total_bangun_pagi,
+                SUM(k.beribadah) AS total_beribadah,
+                SUM(k.berolahraga) AS total_berolahraga,
+                SUM(k.makan_sehat) AS total_makan_sehat,
+                SUM(k.gemar_belajar) AS total_gemar_belajar,
+                SUM(k.bermasyarakat) AS total_bermasyarakat,
+                SUM(k.tidur_cepat) AS total_tidur_cepat
+            FROM anak_kebiasaan k
+            JOIN users u ON k.id_user = u.id_user
+            WHERE u.kelas = :kelas
+              AND MONTH(k.created_at) = :bulan
+              AND YEAR(k.created_at) = :tahun
+            GROUP BY u.id_user, u.nama_lengkap, u.kelas
+            ORDER BY u.nama_lengkap ASC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':kelas' => $kelas,
+            ':bulan' => $bulan,
+            ':tahun' => $tahun
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 }
 ?>

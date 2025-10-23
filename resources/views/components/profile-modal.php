@@ -68,7 +68,7 @@ $user = $_SESSION['user'] ?? [];
     <div class="flex justify-between">
       <span class="text-gray-600">Kelas</span>
       <span class="font-medium text-gray-800">
-        <?= htmlspecialchars($user['wali_kelas'] ?? '-') ?>
+        <?= htmlspecialchars($user['kelas'] ?? '-') ?>
       </span>
     </div>
   <?php elseif (($user['peran'] ?? '') === 'guru'): ?>

@@ -41,18 +41,23 @@
                 <p class="text-gray-600 mt-2">Gunakan email dan password Anda</p>
             </div>
 
-            <!-- Notifikasi -->
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="mb-6 p-3 rounded-lg border 
-                    <?php if ($_SESSION['message']['type'] === 'danger'): ?>
-                        bg-red-50 border-red-200 text-red-700
-                    <?php else: ?>
-                        bg-green-50 border-green-200 text-green-700
-                    <?php endif; ?>">
-                    <span class="font-medium"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
-                </div>
-                <?php unset($_SESSION['message']); ?>
-            <?php endif; ?>
+           <!-- Notifikasi -->
+<?php if (isset($_SESSION['message'])): ?>
+    <?php
+        $type = $_SESSION['message']['type'];
+        $classes = match ($type) {
+            'danger'  => 'bg-red-50 border-red-200 text-red-700',
+            'success' => 'bg-green-50 border-green-200 text-green-700',
+            'warning' => 'bg-yellow-50 border-yellow-200 text-yellow-700',
+            default   => 'bg-gray-50 border-gray-200 text-gray-700',
+        };
+    ?>
+    <div class="mb-6 p-3 rounded-lg border <?= $classes ?>">
+        <span class="font-medium"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
+    </div>
+    <?php unset($_SESSION['message']); ?>
+<?php endif; ?>
+
 
             <form method="POST" action="?route=auth/doLogin">
                 <!-- Email -->

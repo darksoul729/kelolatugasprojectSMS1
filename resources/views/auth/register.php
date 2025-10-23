@@ -4,33 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daftar Akun</title>
-  <!-- ✅ Perbaiki spasi di CDN -->
+  <!-- ✅ Perbaiki: hapus spasi ekstra di CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tidak perlu konfigurasi animasi jika hanya digunakan di landing page -->
 </head>
 
 <body class="h-full bg-gray-50">
-  <!-- Background animasi lembut (opsional, bisa dihapus jika tidak ingin efek ini di semua halaman) -->
+  <!-- Background animasi lembut -->
   <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
     <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-100 rounded-full opacity-20"></div>
     <div class="absolute top-1/3 right-1/4 w-72 h-72 bg-cyan-100 rounded-full opacity-20"></div>
     <div class="absolute bottom-1/4 left-1/2 w-60 h-60 bg-sky-100 rounded-full opacity-20"></div>
   </div>
 
-  <!-- Container Flex utama -->
   <div class="min-h-full flex items-center justify-center p-4 md:p-6">
-    <!-- Grid untuk Form & Ilustrasi -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
       
-      <!-- Bagian Form -->
+      <!-- Form -->
       <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-        
         <div class="text-center mb-8">
           <h2 class="text-2xl font-bold text-gray-800">Buat Akun Baru</h2>
           <p class="text-gray-600 mt-2 text-sm md:text-base">Isi data lengkapmu untuk mendaftar</p>
         </div>
 
-        <!-- Notifikasi -->
         <?php if (isset($_SESSION['message'])): ?>
           <div class="mb-6 p-3 rounded-lg border 
             <?php if ($_SESSION['message']['type'] === 'danger'): ?>
@@ -43,7 +38,7 @@
           <?php unset($_SESSION['message']); ?>
         <?php endif; ?>
 
-        <form method="POST" action="?route=auth/doRegister" class="space-y-5">
+        <form method="POST" action="?route=auth/doRegister" class="space-y-5" id="registerForm">
           <!-- Nama Lengkap -->
           <div>
             <label for="nama_lengkap" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
@@ -51,7 +46,6 @@
                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                    placeholder="Nama lengkap Anda" />
           </div>
-
 
           <!-- Email -->
           <div>
@@ -61,16 +55,27 @@
                    placeholder="email@contoh.com" />
           </div>
 
-          <!-- Kelas (opsional) -->
-          <div>
-            <label for="kelas" class="block text-sm font-medium text-gray-700 mb-1">Kelas (opsional)</label>
-            <select name="kelas" id="kelas"
+        <!-- Pilih Peran -->
+<div>
+    <label for="peran" class="block text-sm font-medium text-gray-700 mb-1">Daftar Sebagai</label>
+    <select name="peran" id="peran" required
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+        <option disabled selected>-- Pilih Peran --</option>
+        <option value="siswa">Siswa</option>
+        <option value="guru">Guru</option>
+    </select>
+</div>
+
+
+          <!-- Kelas / Wali Kelas (akan diubah via JS) -->
+          <div id="kelasContainer">
+            <label for="kelasInput" class="block text-sm font-medium text-gray-700 mb-1" id="kelasLabel">Kelas</label>
+            <select name="kelas" id="kelasInput"
                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
               <option value="">-- Pilih Kelas --</option>
               <?php
-              $tingkatan = ['X', 'XI', 'XII'];
-              $jurusan = ['PPLG', 'DKV', 'MPLB', 'TJKT'];
-
+              $tingkatan = ['7', '8', '9'];
+              $jurusan = ['A', 'B', 'C', 'D'];
               foreach ($tingkatan as $t) {
                   foreach ($jurusan as $j) {
                       $kelas = "$t $j";
@@ -97,7 +102,6 @@
                    placeholder="••••••••" />
           </div>
 
-          <!-- Konfirmasi Password -->
           <div>
             <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password</label>
             <input type="password" name="confirm_password" id="confirm_password" required
@@ -105,10 +109,6 @@
                    placeholder="••••••••" />
           </div>
 
-          <!-- Role tersembunyi -->
-          <input type="hidden" name="peran" value="siswa" />
-
-          <!-- Tombol -->
           <button type="submit"
             class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Daftar Sekarang
@@ -125,13 +125,11 @@
         </div>
       </div>
 
-      <!-- Bagian Ilustrasi / Dekoratif (Hanya muncul di md ke atas) -->
-      <div class="hidden md:flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl"> <!-- Tambahkan latar belakang lembut -->
+      <!-- Ilustrasi -->
+      <div class="hidden md:flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
         <div class="max-w-xs w-full text-center">
-          <!-- Ikon Tugas -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 mx-auto text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-          </svg>
+          <img src="../../public/img/smpn21.jpg" alt="Ilustrasi Daftar Akun" class="mx-auto mb-6 rounded-full shadow-lg">
+
           <h3 class="text-lg font-semibold text-gray-700 mt-4">Mulai Kelola Tugasmu!</h3>
           <p class="text-gray-500 text-sm mt-2">
             Buat akun untuk mengakses fitur pengelolaan tugas yang membantumu belajar lebih terorganisir.
@@ -140,5 +138,20 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const peranSelect = document.getElementById('peran');
+      const kelasContainer = document.getElementById('kelasContainer');
+      const kelasLabel = document.getElementById('kelasLabel');
+      const kelasInput = document.getElementById('kelasInput');
+
+      peranSelect.addEventListener('change', () => {
+        const isGuru = peranSelect.value === 'guru';
+        kelasLabel.textContent = isGuru ? 'Wali Kelas' : 'Kelas';
+        kelasInput.name = isGuru ? 'wali_kelas' : 'kelas';
+      });
+    });
+  </script>
 </body>
 </html>

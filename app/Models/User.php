@@ -7,6 +7,36 @@ class User {
         $this->pdo = $pdo;
     }
 
+    public function getConnection() {
+    return $this->pdo;
+}
+  public function setPeran(int $id_user, string $peran, ?string $wali_kelas = null): bool {
+    try {
+        $sql = "UPDATE {$this->table} SET peran = :peran";
+
+        // Jika peran guru, update wali_kelas juga
+        if ($peran === 'guru' && $wali_kelas) {
+            $sql .= ", wali_kelas = :wali_kelas";
+        }
+
+        $sql .= " WHERE id_user = :id_user";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':peran', $peran, PDO::PARAM_STR);
+        $stmt->bindValue(':id_user', $id_user, PDO::PARAM_INT);
+
+        if ($peran === 'guru' && $wali_kelas) {
+            $stmt->bindValue(':wali_kelas', $wali_kelas, PDO::PARAM_STR);
+        }
+
+        return $stmt->execute();
+    } catch (PDOException $e) {
+        error_log("Gagal setPeran: " . $e->getMessage());
+        return false;
+    }
+}
+
+
     /** REGISTER USER BARU **/
     public function register($nama_lengkap, $email, $password, $peran = 'siswa', $kelas = null, $nip_nis = null) {
         // Cek apakah email sudah digunakan
@@ -156,6 +186,15 @@ public function editUser($id_user, $data) {
     public function countAll() {
     $stmt = $this->pdo->query("SELECT COUNT(*) AS total FROM {$this->table}");
     return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+}
+
+public function deleteUser($id_user) {
+    $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id_user = ?");
+    $result = $stmt->execute([$id_user]);
+
+    return $result 
+        ? ['success' => true, 'message' => 'Pengguna berhasil dihapus.'] 
+        : ['success' => false, 'message' => 'Gagal menghapus pengguna.'];
 }
 
 public function countByRole() {

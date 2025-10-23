@@ -11,14 +11,10 @@ $hariIndo = [
     'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu',
 ];
 
-// Ambil nama bulan Indo
 $namaBulanInggris = date('F', mktime(0, 0, 0, $bulan, 10));
 $namaBulan = $bulanIndo[$namaBulanInggris] ?? $namaBulanInggris;
-
-// Hitung jumlah hari dalam bulan tersebut
 $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
 
-// Buat array semua tanggal dalam bulan itu
 $semuaTanggal = [];
 for ($i = 1; $i <= $jumlahHari; $i++) {
     $tanggalLengkap = sprintf('%04d-%02d-%02d', $tahun, $bulan, $i);
@@ -28,79 +24,132 @@ for ($i = 1; $i <= $jumlahHari; $i++) {
         'tanggal' => $tanggalLengkap,
         'hari' => $hariIndonesia,
         'ada_data' => false,
-        'data_lengkap' => null, // Untuk menyimpan data detail nanti
+        'data_lengkap' => null,
     ];
 }
 
-// Tandai tanggal yang ada datanya dari hasil query $rekap
 if (!empty($rekap)) {
     foreach ($rekap as $r) {
         $tgl = $r['tanggal'];
         if (isset($semuaTanggal[$tgl])) {
             $semuaTanggal[$tgl]['ada_data'] = true;
-            $semuaTanggal[$tgl]['data_lengkap'] = $r; // Simpan data detail
+            $semuaTanggal[$tgl]['data_lengkap'] = $r;
         }
     }
 }
 ?>
 
-
 <!DOCTYPE html>
-<html lang="id" class="font-sans">
+<html lang="id" class="font-sans scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rekap Kebiasaan Bulan <?= $namaBulan ?> <?= $tahun ?></title>
-    <!-- ✅ Perbaiki spasi di akhir URL CDN -->
+    <!-- ✅ Perbaiki: hapus spasi ekstra di CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-<div class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">Rekap Kebiasaan Bulan <?= $namaBulan ?> <?= $tahun ?></h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+<div class="container mx-auto px-4 py-6 md:py-8">
+    <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-5 md:mb-6 text-center">
+        Rekap Kebiasaan Bulan <?= $namaBulan ?> <?= $tahun ?>
+    </h2>
+
+    <!-- Card Ringkasan Bulanan -->
+    <div id="card-ringkasan" class="max-w-2xl mx-auto mb-6 md:mb-8 hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="bg-blue-600 px-4 py-3 md:px-5 md:py-3">
+                <h3 class="text-base md:text-lg font-semibold text-white">
+                    Ringkasan Bulan <span id="bulan-ringkasan"></span>
+                </h3>
+            </div>
+            <div class="p-4 md:p-5 space-y-2 md:space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 font-medium text-sm md:text-base">Hari dengan data:</span>
+                    <span id="hari-ada-data" class="text-gray-900 font-semibold">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 font-medium text-sm md:text-base">Rata-rata kebiasaan baik:</span>
+                    <span id="rata-persentase" class="text-gray-900 font-semibold">0%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 font-medium text-sm md:text-base">Rata-rata kebiasaan “Ya”:</span>
+                    <span id="rata-kebiasaan" class="text-gray-900 font-semibold">0 dari 7</span>
+                </div>
+            </div>
+            <div id="kategori-container" class="px-4 pb-4 md:px-5 md:pb-5 hidden">
+                <div id="kategori-badge" class="flex items-center justify-center gap-2 py-2 px-3 md:px-4 rounded-lg font-semibold border text-center text-sm md:text-base">
+                    <!-- Diisi via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Responsif -->
+    <div class="max-w-full overflow-hidden mb-6 md:mb-8">
+        <canvas id="chartKebiasaan" class="w-full max-w-full h-[300px] md:h-[400px] "></canvas>
+    </div>
+
+    <!-- Grid Tanggal -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
         <?php foreach ($semuaTanggal as $tanggal => $r): ?>
             <?php
-            // Tentukan warna dan status berdasarkan ada_data
             if ($r['ada_data']) {
-                $warnaCard = 'bg-green-100 text-green-800';
-                $kursor = 'cursor-pointer hover:shadow-lg transition-shadow duration-200';
+                $d = $r['data_lengkap'];
+                $kebiasaan = ['bangun_pagi','beribadah','berolahraga','makan_sehat','gemar_belajar','bermasyarakat','tidur_cepat'];
+                $total = $terisi = 0;
+                foreach ($kebiasaan as $k) {
+                    if (isset($d[$k])) {
+                        $terisi++;
+                        $total += (int)$d[$k];
+                    }
+                }
+                $persentase = $terisi > 0 ? ($total / $terisi) * 100 : 0;
+
+                if ($persentase >= 76) $warnaCard = 'bg-green-100 text-green-800';
+                elseif ($persentase >= 51) $warnaCard = 'bg-yellow-100 text-yellow-800';
+                elseif ($persentase >= 26) $warnaCard = 'bg-orange-100 text-orange-800';
+                else $warnaCard = 'bg-red-100 text-red-800';
+
+                $kursor = 'cursor-pointer hover:shadow-md transition-shadow duration-200';
                 $onclick = "onclick=\"bukaModal('$tanggal')\"";
             } else {
                 $warnaCard = 'bg-gray-100 text-gray-400';
-                $kursor = 'opacity-70';
-                $onclick = ''; // Tidak ada onclick jika tidak ada data
+                $kursor = 'opacity-80';
+                $onclick = '';
             }
             ?>
-            <div class="<?= $warnaCard ?> <?= $kursor ?> rounded-xl shadow-md p-4 text-center"
-                 <?= $onclick ?>>
-                <h3 class="text-lg md:text-xl font-semibold"><?= date('d', strtotime($r['tanggal'])) ?></h3>
-                <p class="text-xs sm:text-sm"><?= ucfirst($r['hari']) ?></p>
+            <div class="<?= $warnaCard ?> <?= $kursor ?> rounded-lg md:rounded-xl shadow-sm p-3 text-center "<?= $onclick ?>>
+                <h3 class="text-base md:text-lg font-semibold"><?= date('d', strtotime($r['tanggal'])) ?></h3>
+                <p class="text-xs mt-1"><?= ucfirst($r['hari']) ?></p>
                 <?php if (!$r['ada_data']): ?>
-                    <p class="text-[10px] italic mt-1">Belum ada data</p>
+                    <p class="text-[9px] italic mt-1">Belum ada data</p>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </div>
 </div>
 
-<!-- Floating Action Button (FAB) -->
+
+
+<!-- Floating Action Button -->
 <a href="?route=murid/dashboard"
-   class="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center z-40"
+   class="fixed bottom-5 right-5 md:bottom-6 md:right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center z-40"
    title="Kembali ke Dashboard">
-    <!-- Ikon Home dari Heroicons -->
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 md:w-6 md:h-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955a1.125 1.125 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
     </svg>
 </a>
 
 <!-- Modal -->
 <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-  <div class="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-    <div class="p-5 border-b">
-        <h3 id="modalTanggal" class="text-lg font-semibold text-gray-800"></h3>
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[85vh] overflow-y-auto">
+    <div class="p-4 border-b">
+        <h3 id="modalTanggal" class="text-base md:text-lg font-semibold text-gray-800"></h3>
     </div>
-    <div id="modalContent" class="p-5">
+    <div id="modalContent" class="p-4 space-y-4 text-sm">
         <p class="text-gray-600">Memuat...</p>
     </div>
     <div class="p-4 border-t border-gray-200">
@@ -111,7 +160,124 @@ if (!empty($rekap)) {
     </div>
   </div>
 </div>
+</div>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const semuaTanggal = <?= json_encode($semuaTanggal) ?>;
+  const daftarKebiasaan = ["bangun_pagi", "beribadah", "berolahraga", "makan_sehat", "gemar_belajar", "bermasyarakat", "tidur_cepat"];
+
+  // === Hitung data untuk card ringkasan ===
+  let hariDenganData = 0;
+  let totalPersen = 0;
+  let totalKebYa = 0;
+
+  for (const tgl in semuaTanggal) {
+    const item = semuaTanggal[tgl];
+    if (item.ada_data && item.data_lengkap) {
+      hariDenganData++;
+      let jumlahYa = 0, terisi = 0;
+      daftarKebiasaan.forEach(k => {
+        if (item.data_lengkap[k] !== undefined) {
+          terisi++;
+          if (item.data_lengkap[k] == 1) jumlahYa++;
+        }
+      });
+      totalPersen += (jumlahYa / terisi) * 100;
+      totalKebYa += jumlahYa;
+    }
+  }
+
+  if (hariDenganData > 0) {
+    const rataPersen = (totalPersen / hariDenganData).toFixed(1);
+    const rataKeb = (totalKebYa / hariDenganData).toFixed(1);
+
+    document.getElementById("bulan-ringkasan").textContent = "<?= $namaBulan . ' ' . $tahun ?>";
+    document.getElementById("hari-ada-data").textContent = hariDenganData;
+    document.getElementById("rata-persentase").textContent = rataPersen + "%";
+    document.getElementById("rata-kebiasaan").textContent = rataKeb;
+
+    // Kategori
+    let kategori = "", warna = "", ikon = "";
+    if (hariDenganData < 10) {
+      kategori = "Kurang"; warna = "text-red-600 bg-red-50 border-red-200"; ikon = `<i class='fa-solid fa-circle-xmark'></i>`;
+    } else if (hariDenganData <= 20) {
+      kategori = "Cukup"; warna = "text-yellow-600 bg-yellow-50 border-yellow-200"; ikon = `<i class='fa-solid fa-circle-exclamation'></i>`;
+    } else {
+      kategori = "Sangat Baik"; warna = "text-green-600 bg-green-50 border-green-200"; ikon = `<i class='fa-solid fa-circle-check'></i>`;
+    }
+
+    const badge = document.getElementById("kategori-badge");
+    badge.innerHTML = `${ikon} Kategori: ${kategori}`;
+    badge.className = "flex items-center justify-center gap-2 py-2 px-3 md:px-4 rounded-lg font-semibold border text-center text-sm md:text-base " + warna;
+    document.getElementById("kategori-container").classList.remove("hidden");
+    document.getElementById("card-ringkasan").classList.remove("hidden");
+  }
+
+  // === Chart.js ===
+  const hasil = {};
+  daftarKebiasaan.forEach(k => hasil[k] = { ya: 0, total: 0 });
+
+  for (const tgl in semuaTanggal) {
+    const item = semuaTanggal[tgl];
+    if (item.ada_data && item.data_lengkap) {
+      daftarKebiasaan.forEach(k => {
+        if (item.data_lengkap[k] !== undefined) {
+          hasil[k].total++;
+          if (item.data_lengkap[k] == 1) hasil[k].ya++;
+        }
+      });
+    }
+  }
+
+  const labels = daftarKebiasaan.map(k => k.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()));
+  const dataPersen = daftarKebiasaan.map(k => 
+    hasil[k].total > 0 ? (hasil[k].ya / hasil[k].total * 100).toFixed(1) : 0
+  );
+
+  const ctx = document.getElementById("chartKebiasaan").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Persentase Kebiasaan (%)",
+        data: dataPersen,
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)',
+          'rgba(100, 181, 246, 0.7)'
+        ],
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          title: { display: true, text: "Persentase (%)" }
+        },
+        x: {
+          title: { display: true, text: "Kebiasaan" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.parsed.y}%` } }
+      }
+    }
+  });
+});
+
+</script>
 <script>
 function bukaModal(tanggal) {
   const modal = document.getElementById('modal');
@@ -248,6 +414,5 @@ function tutupModal() {
   document.getElementById('modal').classList.add('hidden');
 }
 </script>
-
 </body>
 </html>

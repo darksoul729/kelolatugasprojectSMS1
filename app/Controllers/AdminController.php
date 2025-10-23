@@ -28,6 +28,80 @@ public function edit($id_user) {
     exit;
 }
 
+
+public function delete($id_user) {
+    $result = $this->userModel->deleteUser($id_user);
+    $_SESSION['message'] = [
+        'type' => $result['success'] ? 'success' : 'danger',
+        'text' => $result['message']
+    ];
+    header("Location: ?route=admin/users");
+    exit;
+}
+
+public function verify() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'Metode request tidak valid.'
+        ];
+        header("Location: ?route=admin/users");
+        exit;
+    }
+
+    // Ambil data dari POST
+    $id_user = isset($_POST['id_user']) ? (int) $_POST['id_user'] : null;
+    $peran = isset($_POST['peran']) ? $_POST['peran'] : 'siswa';
+    $wali_kelas = $peran === 'guru' && isset($_POST['wali_kelas']) ? $_POST['wali_kelas'] : null;
+
+    // Validasi ID
+    if (!$id_user) {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'ID user tidak ditemukan.'
+        ];
+        header("Location: ?route=admin/users");
+        exit;
+    }
+
+    // Update peran user
+    $success = $this->userModel->setPeran($id_user, $peran, $wali_kelas);
+
+    $_SESSION['message'] = [
+        'type' => $success ? 'success' : 'danger',
+        'text' => $success 
+            ? "User berhasil diverifikasi dan menjadi {$peran}" . ($peran === 'guru' ? " dengan Wali Kelas {$wali_kelas}" : "") 
+            : "Gagal memverifikasi user."
+    ];
+
+    header("Location: ?route=admin/users");
+    exit;
+}
+
+
+
+
+public function setrole() {
+    if (isset($_GET['id']) && isset($_GET['role'])) {
+        $id = (int) $_GET['id'];
+        $role = $_GET['peran'] === 'guru' ? 'guru' : 'siswa';
+
+        // ambil koneksi dari userModel
+        $pdo = $this->userModel->getConnection();
+        $stmt = $pdo->prepare("UPDATE users SET peran = ? WHERE id_user = ?");
+        $stmt->execute([$role, $id]);
+
+        $_SESSION['message'] = [
+            'type' => 'success',
+            'text' => "Peran pengguna berhasil diubah menjadi {$role}."
+        ];
+    }
+
+    header('Location: ?route=admin/users');
+    exit;
+}
+
+
 /**
  * 🟢 Update user (submit dari modal)
  */
