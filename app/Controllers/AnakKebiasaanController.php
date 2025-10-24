@@ -55,20 +55,27 @@ class AnakKebiasaanController {
     /**
      * ✅ Rekap bulanan untuk siswa (murid)
      */
-    public function rekapBulanan() {
-        $id_user = $_SESSION['user']['id_user'] ?? null;
-        if (!$id_user) {
-            $_SESSION['message'] = "Gagal: user belum login.";
-            header('Location: /?route=login');
-            exit;
-        }
-
-        $bulan = $_GET['bulan'] ?? date('m');
-        $tahun = $_GET['tahun'] ?? date('Y');
-        $rekap = $this->model->getRekapBulanan($id_user, $bulan, $tahun);
-
-        include $this->basePath . '/resources/views/murid/kebiasaan/rekap.php';
+   public function rekapBulanan() {
+    $id_user = $_SESSION['user']['id_user'] ?? null;
+    if (!$id_user) {
+        $_SESSION['message'] = "Gagal: user belum login.";
+        header('Location: /?route=login');
+        exit;
     }
+
+    $bulan = $_GET['bulan'] ?? date('m');
+    $tahun = $_GET['tahun'] ?? date('Y');
+
+    // ✅ Hitung jumlah hari dalam bulan tertentu
+    $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+
+    // ✅ Ambil data rekap dari model
+    $rekap = $this->model->getRekapBulanan($id_user, $bulan, $tahun);
+
+    // ✅ Kirim ke view (bisa diakses sebagai $jumlahHari)
+    include $this->basePath . '/resources/views/murid/kebiasaan/rekap.php';
+}
+
 
     /**
      * ✅ Ambil detail kebiasaan per tanggal (AJAX)
