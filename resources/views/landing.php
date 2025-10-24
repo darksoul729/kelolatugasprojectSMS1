@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <favicon rel="jpg" href="../../public/img/smpn21.jpg">
   <title>Jurnal Tujuh KAIH — Kebiasaan Anak Indonesia Hebat</title>
+  <link rel="icon" href="../../public/img/smpn21.jpg" type="images/jpg">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .navbar-hidden {
@@ -58,23 +58,34 @@
     }
   </style>
 </head>
+ 
+
 <body class="font-sans bg-gray-50 text-gray-800 overflow-x-hidden">
-   <!-- Notifikasi -->
-<?php if (isset($_SESSION['message'])): ?>
-    <?php
-        $type = $_SESSION['message']['type'];
-        $classes = match ($type) {
-            'danger'  => 'bg-red-50 border-red-200 text-red-700',
-            'success' => 'bg-green-50 border-green-200 text-green-700',
-            'warning' => 'bg-yellow-50 border-yellow-200 text-yellow-700',
-            default   => 'bg-gray-50 border-gray-200 text-gray-700',
-        };
-    ?>
-    <div class="mb-6 p-3 rounded-lg border <?= $classes ?>">
-        <span class="font-medium"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
+
+<?php if (!empty($_SESSION['message'])): ?>
+    <div id="notifMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-md w-full z-50 transition-opacity duration-500 opacity-100">
+        <div class="flex items-start gap-3 p-4 rounded-lg border shadow-lg
+            <?php if ($_SESSION['message']['type'] === 'success'): ?>
+                bg-green-50 border-green-200 text-green-700
+            <?php else: ?>
+                bg-red-50 border-red-200 text-red-700
+            <?php endif; ?>">
+            <?php if ($_SESSION['message']['type'] === 'success'): ?>
+                <svg class="w-5 h-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            <?php else: ?>
+                <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            <?php endif; ?>
+            <span class="font-medium text-sm"><?= htmlspecialchars($_SESSION['message']['text']) ?></span>
+        </div>
     </div>
     <?php unset($_SESSION['message']); ?>
 <?php endif; ?>
+
+  
   <!-- Navbar -->
   <header id="navbar" class="fixed top-0 left-0 w-full z-30 bg-white shadow-md transition-transform duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
