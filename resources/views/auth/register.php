@@ -130,10 +130,11 @@
         <div class="max-w-xs w-full text-center">
           <img src="../../public/img/smpn21.jpg" alt="Ilustrasi Daftar Akun" class="mx-auto mb-6 rounded-full shadow-lg">
 
-          <h3 class="text-lg font-semibold text-gray-700 mt-4">Mulai Kelola Tugasmu!</h3>
-          <p class="text-gray-500 text-sm mt-2">
-            Buat akun untuk mengakses fitur pengelolaan tugas yang membantumu belajar lebih terorganisir.
-          </p>
+<h3 class="text-lg font-semibold text-gray-700 mt-4">Bangun Rutinitas Positif Setiap Hari!</h3>
+<p class="text-gray-500 text-sm mt-2">
+  Daftar sekarang untuk mulai mencatat dan mengelola kebiasaan harianmu agar hidup lebih produktif.
+</p>
+
         </div>
       </div>
     </div>
