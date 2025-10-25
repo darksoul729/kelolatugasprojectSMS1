@@ -56,16 +56,38 @@
         <option value="7 B">7 B</option>
         <option value="7 C">7 C</option>
         <option value="7 D">7 D</option>
-        <!-- Kelas 8 -->
+        <option value="7 E">7 E</option>
+        <option value="7 E">7 F</option>
+        <option value="7 E">7 G</option>
+        <option value="7 E">7 H</option>
+        <option value="7 E">7 I</option>
+        <option value="7 E">7 J</option>
+
+
+
+                <!-- Kelas 8 -->
         <option value="8 A">8 A</option>
         <option value="8 B">8 B</option>
         <option value="8 C">8 C</option>
         <option value="8 D">8 D</option>
+        <option value="8 D">8 E</option>
+        <option value="8 D">8 F</option>
+        <option value="8 D">8 G</option>
+        <option value="8 D">8 H</option>
+        <option value="8 D">8 I</option>
+
+
+
         <!-- Kelas 9 -->
         <option value="9 A">9 A</option>
         <option value="9 B">9 B</option>
         <option value="9 C">9 C</option>
         <option value="9 D">9 D</option>
+        <option value="9 D">9 E</option>
+        <option value="9 D">9 F</option>
+        <option value="9 D">9 G</option>
+        <option value="9 D">9 H</option>
+
     </select>
 </div>
 
