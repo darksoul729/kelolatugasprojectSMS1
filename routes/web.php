@@ -138,7 +138,6 @@ switch ($route) {
     $authCtrl->requireRole('admin');
     $userCtrl->verify(); // controller yang akan ambil $_POST langsung
     break;
-
     
     
 

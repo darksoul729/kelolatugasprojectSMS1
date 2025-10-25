@@ -175,37 +175,41 @@ public function getDetailByDate($id_user, $tanggal) {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ✅ Rekap seluruh siswa satu kelas (untuk guru wali kelas)
-    public function getMonthlySummaryByClass($kelas, $bulan, $tahun) {
-        $sql = "
-            SELECT 
-                u.id_user,
-                u.nama_lengkap,
-                u.kelas,
-                COUNT(k.id) AS total_laporan,
-                SUM(k.bangun_pagi) AS total_bangun_pagi,
-                SUM(k.beribadah) AS total_beribadah,
-                SUM(k.berolahraga) AS total_berolahraga,
-                SUM(k.makan_sehat) AS total_makan_sehat,
-                SUM(k.gemar_belajar) AS total_gemar_belajar,
-                SUM(k.bermasyarakat) AS total_bermasyarakat,
-                SUM(k.tidur_cepat) AS total_tidur_cepat
-            FROM anak_kebiasaan k
-            JOIN users u ON k.id_user = u.id_user
-            WHERE u.kelas = :kelas
-              AND MONTH(k.created_at) = :bulan
-              AND YEAR(k.created_at) = :tahun
-            GROUP BY u.id_user, u.nama_lengkap, u.kelas
-            ORDER BY u.nama_lengkap ASC
-        ";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            ':kelas' => $kelas,
-            ':bulan' => $bulan,
-            ':tahun' => $tahun
-        ]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+ // ✅ Rekap seluruh siswa satu kelas (untuk guru wali kelas)
+public function getMonthlySummaryByClass(string $kelas, string $bulan, string $tahun): array
+{
+    $sql = "
+        SELECT 
+            u.id_user,
+            u.nama_lengkap,
+            u.kelas,
+            COUNT(k.id) AS total_laporan,
+            COALESCE(SUM(k.bangun_pagi), 0) AS total_bangun_pagi,
+            COALESCE(SUM(k.beribadah), 0) AS total_beribadah,
+            COALESCE(SUM(k.berolahraga), 0) AS total_berolahraga,
+            COALESCE(SUM(k.makan_sehat), 0) AS total_makan_sehat,
+            COALESCE(SUM(k.gemar_belajar), 0) AS total_gemar_belajar,
+            COALESCE(SUM(k.bermasyarakat), 0) AS total_bermasyarakat,
+            COALESCE(SUM(k.tidur_cepat), 0) AS total_tidur_cepat
+        FROM users u
+        LEFT JOIN anak_kebiasaan k 
+            ON k.id_user = u.id_user 
+            AND MONTH(k.created_at) = :bulan 
+            AND YEAR(k.created_at) = :tahun
+        WHERE u.kelas = :kelas
+        GROUP BY u.id_user, u.nama_lengkap, u.kelas
+        ORDER BY u.nama_lengkap ASC
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        ':kelas' => $kelas,
+        ':bulan' => $bulan,
+        ':tahun' => $tahun
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // selalu kembalikan array
+}
 
 }
 ?>

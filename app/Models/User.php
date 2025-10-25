@@ -10,6 +10,7 @@ class User {
     public function getConnection() {
     return $this->pdo;
 }
+
   public function setPeran(int $id_user, string $peran, ?string $wali_kelas = null): bool {
     try {
         $sql = "UPDATE {$this->table} SET peran = :peran";

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jurnal Tujuh KAIH — Kebiasaan Anak Indonesia Hebat</title>
-  <link rel="icon" href="../../public/img/smpn21.jpg" type="images/jpg">
+  <link rel="icon" href="../../public//img//smpn21.jpg" type="images/jpg/jpeg">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .navbar-hidden {
