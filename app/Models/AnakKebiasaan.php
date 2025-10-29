@@ -211,5 +211,43 @@ public function getMonthlySummaryByClass(string $kelas, string $bulan, string $t
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // selalu kembalikan array
 }
 
+
+// ✅ Ambil laporan kebiasaan berdasarkan wali kelas (guru)
+public function getLaporanByWaliKelas(string $wali_kelas, string $bulan, string $tahun): array
+{
+    $sql = "
+        SELECT 
+            u.id_user,
+            u.nama_lengkap,
+            u.kelas,
+            COUNT(k.id) AS total_laporan,
+            COALESCE(SUM(k.bangun_pagi), 0) AS total_bangun_pagi,
+            COALESCE(SUM(k.beribadah), 0) AS total_beribadah,
+            COALESCE(SUM(k.berolahraga), 0) AS total_berolahraga,
+            COALESCE(SUM(k.makan_sehat), 0) AS total_makan_sehat,
+            COALESCE(SUM(k.gemar_belajar), 0) AS total_gemar_belajar,
+            COALESCE(SUM(k.bermasyarakat), 0) AS total_bermasyarakat,
+            COALESCE(SUM(k.tidur_cepat), 0) AS total_tidur_cepat
+        FROM users u
+        LEFT JOIN anak_kebiasaan k 
+            ON k.id_user = u.id_user
+            AND MONTH(k.created_at) = :bulan
+            AND YEAR(k.created_at) = :tahun
+        WHERE u.wali_kelas = :wali_kelas
+        GROUP BY u.id_user, u.nama_lengkap, u.kelas
+        ORDER BY u.nama_lengkap ASC
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        ':wali_kelas' => $wali_kelas,
+        ':bulan' => $bulan,
+        ':tahun' => $tahun
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+
 }
 ?>

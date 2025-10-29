@@ -1,9 +1,21 @@
+<?php
+
+if (!function_exists('e')) {
+    function e($value) {
+        return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+    }
+}
+
+$bulan = $bulan ?? '';
+$kelas = $kelas ?? '';
+$siswa = $siswa ?? [];
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rekap Kebiasaan Bulan <?= htmlspecialchars($bulan) ?> - Kelas <?= htmlspecialchars($kelas) ?></title>
+  <title>Rekap Kebiasaan Bulan <?= e($bulan) ?> - Kelas <?= e($kelas) ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen font-sans text-gray-800">
@@ -12,75 +24,68 @@
   <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200 py-4 px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
     <div>
       <h1 class="text-2xl font-bold text-blue-700">
-        Rekap Kebiasaan Bulan <?= htmlspecialchars($bulan) ?>
+        Rekap Kebiasaan Bulan <?= e($bulan) ?>
       </h1>
-      <p class="text-gray-500 text-sm">Kelas <?= htmlspecialchars($kelas) ?></p>
+      <p class="text-gray-500 text-sm">Kelas <?= e($kelas) ?></p>
     </div>
 
     <!-- Filter Bulan & Tahun -->
     <form method="GET" action="" class="flex flex-wrap items-center gap-3">
       <input type="hidden" name="route" value="guru/tugas">
 
+      <!-- Pilih Bulan -->
       <div>
-  <label for="bulan" class="text-sm text-gray-600">Bulan:</label>
-  <select name="bulan" id="bulan" class="border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500">
-    <?php
-      // Daftar nama bulan Indonesia
-      $namaBulan = [
-        '01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni',
-        '07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'
-      ];
+        <label for="bulan" class="text-sm text-gray-600">Bulan:</label>
+        <select name="bulan" id="bulan" class="border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500">
+          <?php
+            $namaBulan = [
+              '01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni',
+              '07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'
+            ];
 
-      // Ambil daftar bulan unik dari database berdasarkan tahun tertentu
-      $stmt = $this->pdo->prepare("
-          SELECT DISTINCT MONTH(created_at) AS bulan
-          FROM anak_kebiasaan
-          WHERE YEAR(created_at) = :tahun
-          ORDER BY bulan ASC
-      ");
-      $stmt->execute([':tahun' => $tahun]);
-      $bulanTersedia = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            // Ambil bulan yang tersedia dari database
+            $stmt = $this->pdo->prepare("
+              SELECT DISTINCT MONTH(created_at) AS bulan
+              FROM anak_kebiasaan
+              WHERE YEAR(created_at) = :tahun
+              ORDER BY bulan ASC
+            ");
+            $stmt->execute([':tahun' => $tahun]);
+            $bulanTersedia = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-      // Fallback jika tidak ada data
-      if (empty($bulanTersedia)) {
-          $bulanTersedia = [date('m')];
-      }
+            if (empty($bulanTersedia)) {
+                $bulanTersedia = [date('m')];
+            }
 
-      // Loop hanya untuk bulan yang tersedia di data
-      foreach ($bulanTersedia as $num) {
-        $num = str_pad($num, 2, '0', STR_PAD_LEFT);
-        $selected = (strpos($bulan, $namaBulan[$num]) !== false) ? 'selected' : '';
-        echo "<option value='$num' $selected>{$namaBulan[$num]}</option>";
-      }
-    ?>
-  </select>
-</div>
+            foreach ($bulanTersedia as $num) {
+              $num = str_pad($num, 2, '0', STR_PAD_LEFT);
+              $selected = (strpos($bulan, $namaBulan[$num]) !== false) ? 'selected' : '';
+              echo "<option value='" . e($num) . "' $selected>" . e($namaBulan[$num]) . "</option>";
+            }
+          ?>
+        </select>
+      </div>
 
-
+      <!-- Pilih Tahun -->
       <div>
         <label for="tahun" class="text-sm text-gray-600">Tahun:</label>
         <select name="tahun" id="tahun" class="border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500">
-         <?php
-// Ambil tahun terkecil dan terbesar dari kolom created_at
-$stmt = $this->pdo->query("SELECT 
-    MIN(YEAR(created_at)) AS tahun_awal, 
-    MAX(YEAR(created_at)) AS tahun_akhir 
-    FROM anak_kebiasaan
-");
-$tahunRange = $stmt->fetch(PDO::FETCH_ASSOC);
+          <?php
+            $stmt = $this->pdo->query("SELECT 
+                MIN(YEAR(created_at)) AS tahun_awal, 
+                MAX(YEAR(created_at)) AS tahun_akhir 
+              FROM anak_kebiasaan
+            ");
+            $tahunRange = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fallback kalau data kosong
-$tahunAwal = $tahunRange['tahun_awal'] ?? date('Y');
-$tahunAkhir = $tahunRange['tahun_akhir'] ?? date('Y');
+            $tahunAwal = $tahunRange['tahun_awal'] ?? date('Y');
+            $tahunAkhir = $tahunRange['tahun_akhir'] ?? date('Y');
 
-// Loop dari tahun awal sampai tahun akhir
-for ($t = $tahunAwal; $t <= $tahunAkhir; $t++) {
-    // Cek apakah tahun ini sedang dipilih
-    $selected = (strpos($bulan, (string)$t) !== false) ? 'selected' : '';
-    echo "<option value='$t' $selected>$t</option>";
-}
-?>
-
+            for ($t = $tahunAwal; $t <= $tahunAkhir; $t++) {
+              $selected = (strpos($bulan, (string)$t) !== false) ? 'selected' : '';
+              echo "<option value='" . e($t) . "' $selected>" . e($t) . "</option>";
+            }
+          ?>
         </select>
       </div>
 
@@ -124,7 +129,9 @@ for ($t = $tahunAwal; $t <= $tahunAkhir; $t++) {
 
           <?php if (empty($rekap)): ?>
             <tr>
-              <td colspan="9" class="py-6 text-center text-gray-500 italic">Belum ada data kebiasaan untuk bulan ini.</td>
+              <td colspan="9" class="py-6 text-center text-gray-500 italic">
+                Belum ada data kebiasaan untuk bulan ini.
+              </td>
             </tr>
           <?php else: ?>
             <?php foreach ($rekap as $r): ?>
@@ -146,15 +153,17 @@ for ($t = $tahunAwal; $t <= $tahunAkhir; $t++) {
                 }
               ?>
               <tr class="hover:bg-gray-50 transition">
-                <td class="px-4 py-3 font-medium text-gray-800"><?= htmlspecialchars($r['nama_lengkap']) ?></td>
+                <td class="px-4 py-3 font-medium text-gray-800"><?= e($r['nama_lengkap'] ?? '') ?></td>
                 <?php foreach ($kebiasaanList as $field => $label): ?>
                   <td class="px-4 py-3 text-center">
-                    <span class="<?= $dataJson[$field]['warna'] ?>"><?= $dataJson[$field]['status'] ?></span>
+                    <span class="<?= e($dataJson[$field]['warna']) ?>">
+                      <?= e($dataJson[$field]['status']) ?>
+                    </span>
                   </td>
                 <?php endforeach; ?>
                 <td class="px-4 py-3 text-center">
                   <button 
-                    onclick='bukaDetail("<?= htmlspecialchars($r['nama_lengkap']) ?>", <?= json_encode($dataJson) ?>)'
+                    onclick='bukaDetail("<?= e($r['nama_lengkap']) ?>", <?= json_encode($dataJson) ?>)'
                     class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs md:text-sm">
                     Detail
                   </button>

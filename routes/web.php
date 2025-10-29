@@ -148,6 +148,8 @@ switch ($route) {
         $tugasGuruCtrl->index();
         break;
 
+    
+
     case 'guru/tugas/tambah':
         $authCtrl->requireRole('guru');
         $tugasGuruCtrl->create();
@@ -264,18 +266,7 @@ switch ($route) {
      *  ========================== */
 
 
-   case 'tugas_kelas':
-    $authCtrl->requireRole('guru');
-    $kelasWali = $_SESSION['user']['wali_kelas'] ?? '';
-    if (trim($kelasWali) === '') {
-        $_SESSION['message'] = ['type'=>'warning','text'=>'Guru belum memiliki kelas yang diasuh.'];
-        header("Location: /index.php");
-        exit;
-    }
-
-    $tugas = $tugasGuruCtrl->getByKelas($kelasWali);
-    include $basePath.'/resources/views/components/tabel_biasa.php';
-    break;
+ 
 
     // ======================
     // 7 Kebiasaan Anak
@@ -292,6 +283,9 @@ case 'kebiasaan_anak':
     $kebiasaan = $kebiasaanCtrl->getAllByKelas($kelasWali);
     include $basePath.'/resources/views/components/tabel_kebiasaan.php';
     break;
+
+
+
 
 case 'siswa_kelas':
     $authCtrl->requireRole('guru');

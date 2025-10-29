@@ -108,7 +108,7 @@ class TugasController {
 }
 
 
-/**
+/** 
  * 🔍 Deteksi apakah request datang dari AJAX (fetch atau XMLHttpRequest)
  */
 private function isAjax() {
@@ -120,11 +120,23 @@ private function isAjax() {
 
 
 
-    public function getByKelas($kelas) {
-    // Ambil data tugas dari model, bukan dari controller lagi
-    $tugas = $this->tugasModel->getByKelas($kelas); 
-    include __DIR__.'/../../resources/views/components/tabel_biasa.php';
+  public function getAllKebiasaan() {
+    $user = $_SESSION['user'] ?? null;
+    if (!$user || $user['peran'] !== 'guru') {
+        $_SESSION['message'] = ['type'=>'danger','text'=>'Hanya guru yang bisa melihat data kebiasaan.'];
+        header('Location: /index.php');
+        exit;
+    }
+
+    $waliKelas = $user['wali_kelas'];
+    $bulan = $_GET['bulan'] ?? date('m');
+    $tahun = $_GET['tahun'] ?? date('Y');
+
+    $data = $this->anakKebiasaaan->getLaporanByWaliKelas($waliKelas, $bulan, $tahun);
+
+    include __DIR__ . '/../../resources/views/components/tabel_kebiasaan.php';
 }
+
 
 
 

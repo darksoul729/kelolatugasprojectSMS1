@@ -1,6 +1,14 @@
+<?php
+if (!function_exists('e')) {
+    function e($value) {
+        return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+    }
+}
+?>
+
 <div class="p-4 bg-white rounded shadow">
   <h2 class="text-2xl text-blue-700 font-bold mb-4">
-    Daftar Siswa Kelas <?= htmlspecialchars($kelas ?? '') ?>
+    Daftar Siswa Kelas <?= e($kelas ?? '') ?>
   </h2>
 
   <div class="bg-white overflow-x-auto rounded-2xl shadow-sm border border-gray-100">
@@ -23,10 +31,10 @@
         <?php else: ?>
           <?php foreach ($siswa as $index => $item): ?>
             <tr class="<?= $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' ?> hover:bg-gray-50 transition">
-              <td class="px-4 py-2 border text-center"><?= $index + 1 ?></td>
-              <td class="px-4 py-2 border"><?= htmlspecialchars($item['nama_lengkap']) ?></td>
-              <td class="px-4 py-2 border text-center"><?= htmlspecialchars($item['nip_nis']) ?></td>
-              <td class="px-4 py-2 border text-center"><?= htmlspecialchars($item['kelas']) ?></td>
+              <td class="px-4 py-2 border text-center"><?= e($index + 1) ?></td>
+              <td class="px-4 py-2 border"><?= e($item['nama_lengkap'] ?? '') ?></td>
+              <td class="px-4 py-2 border text-center"><?= e($item['nip_nis'] ?? '') ?></td>
+              <td class="px-4 py-2 border text-center"><?= e($item['kelas'] ?? '') ?></td>
             </tr>
           <?php endforeach; ?>
         <?php endif; ?>
