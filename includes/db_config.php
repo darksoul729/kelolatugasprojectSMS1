@@ -1,16 +1,19 @@
 <?php
 /**
  * File: db_config.php
- * Koneksi ke database menggunakan PDO
+ * Koneksi ke database menggunakan PDO + .env
  */
 
-const DB_HOST    = 'localhost';
-const DB_NAME    = 'kelola_tugas';
-const DB_USER    = 'root';
-const DB_PASS    = '';
-const DB_CHARSET = 'utf8mb4';
+require_once __DIR__ . '/env.php';
+loadEnv(__DIR__ . '/../.env');
 
-$dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+$host    = $_ENV['DB_HOST'];
+$db      = $_ENV['DB_NAME'];
+$user    = $_ENV['DB_USER'];
+$pass    = $_ENV['DB_PASS'];
+$charset = $_ENV['DB_CHARSET'];
+
+$dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, 
@@ -19,8 +22,7 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+    $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (PDOException $e) {
-    exit("Database connection failed: " . $e->getMessage());
+    exit("❌ Database connection failed: " . $e->getMessage());
 }
-

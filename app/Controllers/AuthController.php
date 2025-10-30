@@ -96,48 +96,83 @@ class AuthController {
      *  REGISTRASI USER BARU
      * ----------------------------- */
   public function register() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $password = $_POST['password'] ?? '';
-        $confirm_password = $_POST['confirm_password'] ?? '';
-
-        // ✅ Validasi kesesuaian password
-        if ($password !== $confirm_password) {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Password dan konfirmasi tidak cocok.'];
-            header("Location: ?route=auth/register");
-            exit;
-        }
-
-        $nama = trim($_POST['nama_lengkap'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $peran = 'belum_verifikasi'; // ✅ default role baru
-        $kelas = $_POST['kelas'] ?? null;
-        $nip_nis = $_POST['nip_nis'] ?? null;
-
-        // ✅ Validasi wajib isi
-        if (empty($nama) || empty($email) || empty($password)) {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => 'Nama lengkap, email, dan password wajib diisi.'];
-            header("Location: ?route=auth/register");
-            exit;
-        }
-
-        // ✅ Proses registrasi
-        $result = $this->userModel->register($nama, $email, $password, $peran, $kelas, $nip_nis);
-
-        if ($result['success']) {
-            $_SESSION['message'] = [
-                'type' => 'success',
-                'text' => 'Registrasi berhasil! Akun Anda menunggu konfirmasi dari admin.'
-            ];
-            // ✅ Arahkan ke halaman menunggu konfirmasi
-            header("Location: ?route=auth/menunggu-konfirmasi");
-        } else {
-            $_SESSION['message'] = ['type' => 'danger', 'text' => $result['message']];
-            header("Location: ?route=auth/register");
-        }
-        exit;
-    } else {
-        $this->showRegister();
+    // Pastikan session aktif
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+
+    // Hanya tangani POST
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return $this->showRegister();
+    }
+
+    // Ambil data input dengan aman
+    $nama = trim($_POST['nama_lengkap'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    $kelas = $_POST['kelas'] ?? null;
+    $nip_nis = trim($_POST['nip_nis'] ?? '');
+    $peran = 'belum_verifikasi'; // default role
+
+    // ✅ 1. Validasi password konfirmasi
+    if ($password !== $confirm_password) {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'Password dan konfirmasi password tidak cocok.'
+        ];
+        header("Location: ?route=auth/register");
+        exit;
+    }
+
+    // ✅ 2. Validasi input wajib isi
+    if (empty($nama) || empty($email) || empty($password)) {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'Nama lengkap, email, dan password wajib diisi.'
+        ];
+        header("Location: ?route=auth/register");
+        exit;
+    }
+
+    // ✅ 3. Cek apakah email sudah digunakan
+    if ($this->userModel->isEmailExist($email)) {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'Email sudah terdaftar. Silakan gunakan email lain.'
+        ];
+        header("Location: ?route=auth/register");
+        exit;
+    }
+
+    // ✅ 4. Cek apakah NIP/NIS sudah digunakan (jika diisi)
+    if (!empty($nip_nis) && $this->userModel->isNipNisExist($nip_nis)) {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => 'NIP/NIS sudah digunakan oleh pengguna lain.'
+        ];
+        header("Location: ?route=auth/register");
+        exit;
+    }
+
+    // ✅ 5. Simpan ke database
+    $result = $this->userModel->register($nama, $email, $password, $peran, $kelas, $nip_nis);
+
+    if ($result['success']) {
+        $_SESSION['message'] = [
+            'type' => 'success',
+            'text' => 'Registrasi berhasil! Akun Anda menunggu konfirmasi dari admin.'
+        ];
+        header("Location: ?route=auth/menunggu-konfirmasi");
+    } else {
+        $_SESSION['message'] = [
+            'type' => 'danger',
+            'text' => $result['message'] ?? 'Gagal menyimpan data pengguna.'
+        ];
+        header("Location: ?route=auth/register");
+    }
+
+    exit;
 }
 
 public function showMenungguKonfirmasi() {

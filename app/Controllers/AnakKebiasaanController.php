@@ -55,27 +55,20 @@ class AnakKebiasaanController {
     /**
      * ✅ Rekap bulanan untuk siswa (murid)
      */
-   public function rekapBulanan() {
-    $id_user = $_SESSION['user']['id_user'] ?? null;
-    if (!$id_user) {
-        $_SESSION['message'] = "Gagal: user belum login.";
-        header('Location: /?route=login');
-        exit;
+    public function rekapBulanan() {
+        $id_user = $_SESSION['user']['id_user'] ?? null;
+        if (!$id_user) {
+            $_SESSION['message'] = "Gagal: user belum login.";
+            header('Location: /?route=login');
+            exit;
+        }
+
+        $bulan = $_GET['bulan'] ?? date('m');
+        $tahun = $_GET['tahun'] ?? date('Y');
+        $rekap = $this->model->getRekapBulanan($id_user, $bulan, $tahun);
+
+        include $this->basePath . '/resources/views/murid/kebiasaan/rekap.php';
     }
-
-    $bulan = $_GET['bulan'] ?? date('m');
-    $tahun = $_GET['tahun'] ?? date('Y');
-
-    // ✅ Hitung jumlah hari dalam bulan tertentu
-    $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
-
-    // ✅ Ambil data rekap dari model
-    $rekap = $this->model->getRekapBulanan($id_user, $bulan, $tahun);
-
-    // ✅ Kirim ke view (bisa diakses sebagai $jumlahHari)
-    include $this->basePath . '/resources/views/murid/kebiasaan/rekap.php';
-}
-
 
     /**
      * ✅ Ambil detail kebiasaan per tanggal (AJAX)
@@ -160,67 +153,76 @@ class AnakKebiasaanController {
      * ✅ Simpan data kebiasaan (murid)
      */
     public function store() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
 
-        $id_user = $_SESSION['user']['id_user'] ?? null;
-        $nama_lengkap = $_SESSION['user']['nama_lengkap'] ?? '';
-        $kelas = $_SESSION['user']['kelas'] ?? '';
+    $id_user = $_SESSION['user']['id_user'] ?? null;
+    $nama_lengkap = $_SESSION['user']['nama_lengkap'] ?? '';
+    $kelas = $_SESSION['user']['kelas'] ?? '';
 
-        if (!$id_user) {
-            $_SESSION['message'] = ['type'=>'error','text'=>'Gagal: user belum login.'];
-            header('Location: /?route=login');
-            exit;
-        }
-
-        date_default_timezone_set('Asia/Jakarta');
-        $created_at = date('Y-m-d H:i:s');
-
-        $validAgama = ['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu','Lainnya'];
-        $agama = in_array($_POST['agama'] ?? '', $validAgama) ? $_POST['agama'] : null;
-
-        $data = [
-            'id_user'=>$id_user,
-            'bangun_pagi'=>isset($_POST['bangun_pagi'])?1:0,
-            'jam_bangun'=>$_POST['jam_bangun']??null,
-            'beribadah'=>isset($_POST['beribadah'])?1:0,
-            'agama'=>$agama,
-            'sholat_subuh'=>isset($_POST['sholat_subuh'])?1:0,
-            'sholat_dzuhur'=>isset($_POST['sholat_dzuhur'])?1:0,
-            'sholat_ashar'=>isset($_POST['sholat_ashar'])?1:0,
-            'sholat_maghrib'=>isset($_POST['sholat_maghrib'])?1:0,
-            'sholat_isya'=>isset($_POST['sholat_isya'])?1:0,
-            'ibadah_lainnya'=>$_POST['ibadah_lainnya']??null,
-            'berolahraga'=>isset($_POST['berolahraga'])?1:0,
-            'jam_olahraga_mulai'=>$_POST['jam_olahraga_mulai']??null,
-            'jam_olahraga_selesai'=>$_POST['jam_olahraga_selesai']??null,
-            'makan_sehat'=>isset($_POST['makan_sehat'])?1:0,
-            'makan_pagi'=>$_POST['makan_pagi']??null,
-            'makan_siang'=>$_POST['makan_siang']??null,
-            'makan_malam'=>$_POST['makan_malam']??null,
-            'gemar_belajar'=>isset($_POST['gemar_belajar'])?1:0,
-            'jam_belajar_mulai'=>$_POST['jam_belajar_mulai']??null,
-            'jam_belajar_selesai'=>$_POST['jam_belajar_selesai']??null,
-            'materi_belajar'=>$_POST['materi_belajar']??null,
-            'bermasyarakat'=>isset($_POST['bermasyarakat'])?1:0,
-            'ket_masyarakat'=>$_POST['ket_masyarakat']??null,
-            'tidur_cepat'=>isset($_POST['tidur_cepat'])?1:0,
-            'jam_tidur'=>$_POST['jam_tidur']??null,
-            'nama_lengkap'=>$nama_lengkap,
-            'kelas'=>$kelas,
-            'created_at'=>$created_at
-        ];
-
-        try {
-            $this->model->insert($data);
-            $_SESSION['message'] = ['type'=>'success','text'=>'Data kebiasaan berhasil disimpan!'];
-            header('Location: ?route=murid/dashboard');
-            exit;
-        } catch (PDOException $e) {
-            $_SESSION['message'] = ['type'=>'error','text'=>'Gagal menyimpan data. Silakan cek input dan coba lagi.'];
-            header('Location: ?route=murid/kebiasaan/create');
-            exit;
-        }
+    if (!$id_user) {
+        $_SESSION['message'] = ['type'=>'error','text'=>'Gagal: user belum login.'];
+        header('Location: /?route=login');
+        exit;
     }
+
+    date_default_timezone_set('Asia/Jakarta');
+    $created_at = date('Y-m-d H:i:s');
+
+    // Validasi agama
+    $validAgama = ['Islam','Kristen','Katolik','Hindu','Buddha','Konghucu','Lainnya'];
+    $agama = in_array($_POST['agama'] ?? '', $validAgama) ? $_POST['agama'] : null;
+
+    // Fungsi bantu untuk parsing jam
+    function parseTime($input, $default = null) {
+        if (empty($input)) return $default;
+        $time = date_create_from_format('H:i', $input);
+        if (!$time) return $default;
+        return $time->format('H:i:s');
+    }
+
+    $data = [
+        'id_user' => $id_user,
+        'bangun_pagi' => isset($_POST['bangun_pagi']) ? 1 : 0,
+        'jam_bangun' => parseTime($_POST['jam_bangun'] ?? null),
+        'beribadah' => isset($_POST['beribadah']) ? 1 : 0,
+        'agama' => $agama,
+        'sholat_subuh' => isset($_POST['sholat_subuh']) ? 1 : 0,
+        'sholat_dzuhur' => isset($_POST['sholat_dzuhur']) ? 1 : 0,
+        'sholat_ashar' => isset($_POST['sholat_ashar']) ? 1 : 0,
+        'sholat_maghrib' => isset($_POST['sholat_maghrib']) ? 1 : 0,
+        'sholat_isya' => isset($_POST['sholat_isya']) ? 1 : 0,
+        'ibadah_lainnya' => $_POST['ibadah_lainnya'] ?? null,
+        'berolahraga' => isset($_POST['berolahraga']) ? 1 : 0,
+        'jam_olahraga_mulai' => parseTime($_POST['jam_olahraga_mulai'] ?? null),
+        'jam_olahraga_selesai' => parseTime($_POST['jam_olahraga_selesai'] ?? null),
+        'makan_sehat' => isset($_POST['makan_sehat']) ? 1 : 0,
+        'makan_pagi' => $_POST['makan_pagi'] ?? null,
+        'makan_siang' => $_POST['makan_siang'] ?? null,
+        'makan_malam' => $_POST['makan_malam'] ?? null,
+        'gemar_belajar' => isset($_POST['gemar_belajar']) ? 1 : 0,
+        'jam_belajar_mulai' => parseTime($_POST['jam_belajar_mulai'] ?? null),
+        'jam_belajar_selesai' => parseTime($_POST['jam_belajar_selesai'] ?? null),
+        'materi_belajar' => $_POST['materi_belajar'] ?? null,
+        'bermasyarakat' => isset($_POST['bermasyarakat']) ? 1 : 0,
+        'ket_masyarakat' => $_POST['ket_masyarakat'] ?? null,
+        'tidur_cepat' => isset($_POST['tidur_cepat']) ? 1 : 0,
+        'jam_tidur' => parseTime($_POST['jam_tidur'] ?? null),
+        'nama_lengkap' => $nama_lengkap,
+        'kelas' => $kelas,
+        'created_at' => $created_at
+    ];
+
+    try {
+        $this->model->insert($data);
+        $_SESSION['message'] = ['type'=>'success','text'=>'Data kebiasaan berhasil disimpan!'];
+        header('Location: ?route=murid/dashboard');
+        exit;
+    } catch (PDOException $e) {
+        $_SESSION['message'] = ['type'=>'error','text'=>'Gagal menyimpan data. Silakan cek input dan coba lagi.'];
+        header('Location: ?route=murid/kebiasaan/create');
+        exit;
+    }
+}
 
     /**
      * ✅ Upload file berdasarkan kategori
