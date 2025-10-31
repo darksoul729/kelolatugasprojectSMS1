@@ -134,15 +134,31 @@ class AdminController {
     /**
      * 🔴 Delete User
      */
-    public function delete($id_user) {
-        $result = $this->userModel->deleteUser($id_user);
-        $_SESSION['message'] = [
-            'type' => $result['success'] ? 'success' : 'danger',
-            'text' => $result['message']
-        ];
-        header("Location: ?route=admin/users");
+public function delete() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: ?route=admin/users');
         exit;
     }
+
+    $id_user = $_POST['id_user'] ?? null;
+
+    if (!$id_user) {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'ID pengguna tidak valid.'];
+        header('Location: ?route=admin/users');
+        exit;
+    }
+
+    $result = $this->userModel->deleteUser($id_user);
+
+    $_SESSION['message'] = [
+        'type' => $result['success'] ? 'success' : 'danger',
+        'text' => $result['message']
+    ];
+
+    header('Location: ?route=admin/users');
+    exit;
+}
+
 
     /**
      * ✅ Verify User (Set Role Multiple)
@@ -216,112 +232,69 @@ class AdminController {
     /**
      * 📥 Import Siswa dari Excel
      */
-    public function importSiswa()
+public function importSiswa()
 {
     header('Content-Type: application/json');
+    $filePath = null; // biar tetap dikenali di finally
 
     try {
-        // Pastikan request POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Metode tidak diizinkan.'
-            ]);
-            return;
+            throw new Exception('Metode tidak diizinkan.', 405);
         }
 
-        // Validasi file upload
         if (!isset($_FILES['excel_file']) || $_FILES['excel_file']['error'] !== UPLOAD_ERR_OK) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'File tidak ditemukan atau gagal diunggah.'
-            ]);
-            return;
+            throw new Exception('File tidak ditemukan atau gagal diunggah.', 400);
         }
 
-        // Pastikan ekstensi file benar (xls/xlsx)
         $allowedExtensions = ['xls', 'xlsx'];
         $fileName = $_FILES['excel_file']['name'];
-        $fileTmp = $_FILES['excel_file']['tmp_name'];
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $fileTmp  = $_FILES['excel_file']['tmp_name'];
+        $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
         if (!in_array($fileExt, $allowedExtensions)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Format file tidak valid. Hanya mendukung .xls atau .xlsx.'
-            ]);
-            return;
+            throw new Exception('Format file tidak valid. Hanya mendukung .xls atau .xlsx.', 400);
         }
 
-        // Tentukan lokasi penyimpanan sementara
+        // Simpan file sementara
         $uploadDir = __DIR__ . '/../../storage/tmp/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
         $filePath = $uploadDir . uniqid('import_') . '.' . $fileExt;
 
-        // Pindahkan file ke folder sementara
         if (!move_uploaded_file($fileTmp, $filePath)) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Gagal memindahkan file upload.'
-            ]);
-            return;
+            throw new Exception('Gagal memindahkan file upload.', 500);
         }
 
-        // Proses import lewat model User
+        // Proses import
         $result = $this->userModel->importSiswaFromExcel($filePath);
 
-        // Hapus file setelah diproses
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-
-        // ✅ Jika sukses
-        if ($result['success']) {
-            echo json_encode([
-                'success' => true,
-                'message' => $result['message'],
-                'data' => [
-                    'imported' => $result['imported'],
-                    'skipped' => $result['skipped'],
-                    'errors' => $result['errors'],
-                    'results' => $result['results']
-                ]
-            ]);
-        } 
-        // ❌ Jika gagal
-        else {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message'],
-                'data' => [
-                    'imported' => 0,
-                    'skipped' => 0,
-                    'errors' => $result['errors']
-                ]
-            ]);
-        }
+        // Kirim hasil JSON
+        echo json_encode([
+            'success' => $result['success'],
+            'message' => $result['message'],
+            'data' => [
+                'imported' => $result['imported'] ?? 0,
+                'skipped'  => $result['skipped'] ?? 0,
+                'errors'   => $result['errors'] ?? [],
+                'results'  => $result['results'] ?? []
+            ]
+        ]);
 
     } catch (Exception $e) {
-        // Hapus file jika ada error fatal
-        if (isset($filePath) && file_exists($filePath)) {
-            unlink($filePath);
-        }
-
-        http_response_code(500);
+        http_response_code($e->getCode() ?: 500);
         echo json_encode([
             'success' => false,
-            'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
         ]);
+
+    } finally {
+        // 🔥 Hapus file apapun hasilnya (sukses/gagal/error)
+        if ($filePath && file_exists($filePath)) {
+            unlink($filePath);
+        }
     }
 }
+
 
 
     /**

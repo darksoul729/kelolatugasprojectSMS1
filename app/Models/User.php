@@ -366,14 +366,40 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
-    public function deleteUser($id_user) {
+   public function deleteUser($id_user)
+{
+    try {
         $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id_user = ?");
         $result = $stmt->execute([$id_user]);
 
-        return $result 
-            ? ['success' => true, 'message' => 'Pengguna berhasil dihapus.'] 
-            : ['success' => false, 'message' => 'Gagal menghapus pengguna.'];
+        if (!$result) {
+            $errorInfo = $stmt->errorInfo();
+            return [
+                'success' => false,
+                'message' => 'Gagal menghapus pengguna: ' . ($errorInfo[2] ?? 'Tidak diketahui.')
+            ];
+        }
+
+        // 🔍 Cek apakah ada baris yang benar-benar terhapus
+        if ($stmt->rowCount() === 0) {
+            return [
+                'success' => false,
+                'message' => 'Tidak ada pengguna yang dihapus. ID mungkin tidak ditemukan.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Pengguna berhasil dihapus.'
+        ];
+
+    } catch (PDOException $e) {
+        return [
+            'success' => false,
+            'message' => 'PDO Error: ' . $e->getMessage()
+        ];
     }
+}
 
     public function countByRole() {
         $stmt = $this->pdo->query("
