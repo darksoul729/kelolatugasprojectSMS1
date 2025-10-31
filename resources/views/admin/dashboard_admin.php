@@ -266,40 +266,89 @@ $usersToShow = array_slice($users, $offset, $perPage);
         </div>
       </div>
 
-      <!-- Form Import Excel -->
+      <!-- Form Import Excel untuk Siswa dan Guru -->
       <div class="mt-4 md:mt-6 border-t pt-4 md:pt-6">
-        <form action="?route=admin/users/import" method="post" enctype="multipart/form-data" id="importForm">
-          <div class="bg-blue-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-blue-200">
-            <div class="mobile-stack md:flex-row items-start md:items-center gap-3 md:gap-4">
-              <div class="flex-1">
-                <label class="block text-sm font-medium text-blue-800 mb-2">
-                  <i class="fas fa-file-excel mr-2"></i>Import Data Siswa dari Excel
-                </label>
-                <div class="mobile-stack sm:flex-row gap-2 md:gap-3">
-                  <input type="file" name="excel_file" 
-                         accept=".xlsx,.xls,.csv" 
-                         required 
-                         class="flex-1 px-3 md:px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm md:text-base">
-                  <div class="flex gap-2 mobile-full">
-                    <button type="submit" 
-                            class="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
-                      <i class="fas fa-upload"></i>
-                      <span>Import Data</span>
-                    </button>
-                    <a href="?route=admin/users/download_template" 
-                       class="px-3 md:px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
-                      <i class="fas fa-download"></i>
-                      <span>Template</span>
-                    </a>
+        <!-- Tab untuk memilih jenis import -->
+        <div class="flex border-b border-gray-200 mb-4">
+          <button id="tabSiswa" class="tab-button py-2 px-4 font-medium text-blue-600 border-b-2 border-blue-600 transition" onclick="switchTab('siswa')">
+            <i class="fas fa-user-graduate mr-2"></i>Import Siswa
+          </button>
+          <button id="tabGuru" class="tab-button py-2 px-4 font-medium text-gray-500 transition" onclick="switchTab('guru')">
+            <i class="fas fa-chalkboard-teacher mr-2"></i>Import Guru
+          </button>
+        </div>
+
+        <!-- Form Import Siswa -->
+        <div id="formSiswa" class="tab-content">
+          <form action="?route=admin/users/import" method="post" enctype="multipart/form-data" id="importForm">
+            <div class="bg-blue-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-blue-200">
+              <div class="mobile-stack md:flex-row items-start md:items-center gap-3 md:gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-blue-800 mb-2">
+                    <i class="fas fa-file-excel mr-2"></i>Import Data Siswa dari Excel
+                  </label>
+                  <div class="mobile-stack sm:flex-row gap-2 md:gap-3">
+                    <input type="file" name="excel_file" 
+                           accept=".xlsx,.xls,.csv" 
+                           required 
+                           class="flex-1 px-3 md:px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm md:text-base">
+                    <div class="flex gap-2 mobile-full">
+                      <button type="submit" 
+                              class="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
+                        <i class="fas fa-upload"></i>
+                        <span>Import Siswa</span>
+                      </button>
+                      <a href="?route=admin/users/download_template" 
+                         class="px-3 md:px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
+                        <i class="fas fa-download"></i>
+                        <span>Template</span>
+                      </a>
+                    </div>
                   </div>
+                  <p class="text-xs md:text-sm text-blue-600 mt-2">
+                    Format: .xlsx, .xls, atau .csv. Template: NO, NAMA LENGKAP, KELAS, EMAIL AKTIF
+                  </p>
                 </div>
-                <p class="text-xs md:text-sm text-blue-600 mt-2">
-                  Format: .xlsx, .xls, atau .csv. Template: NO, NAMA LENGKAP, KELAS, EMAIL AKTIF
-                </p>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
+
+        <!-- Form Import Guru -->
+        <div id="formGuru" class="tab-content hidden">
+          <form action="?route=admin/users/import-guru" method="post" enctype="multipart/form-data" id="importGuruForm">
+            <div class="bg-purple-50 rounded-lg md:rounded-xl p-3 md:p-4 border border-purple-200">
+              <div class="mobile-stack md:flex-row items-start md:items-center gap-3 md:gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-purple-800 mb-2">
+                    <i class="fas fa-file-excel mr-2"></i>Import Data Guru dari Excel
+                  </label>
+                  <div class="mobile-stack sm:flex-row gap-2 md:gap-3">
+                    <input type="file" name="excel_file" 
+                           accept=".xlsx,.xls,.csv" 
+                           required 
+                           class="flex-1 px-3 md:px-4 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-sm md:text-base">
+                    <div class="flex gap-2 mobile-full">
+                      <button type="submit" 
+                              class="px-3 md:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
+                        <i class="fas fa-upload"></i>
+                        <span>Import Guru</span>
+                      </button>
+                      <a href="?route=admin/users/download_guru_template" 
+                         class="px-3 md:px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base mobile-full justify-center">
+                        <i class="fas fa-download"></i>
+                        <span>Template</span>
+                      </a>
+                    </div>
+                  </div>
+                  <p class="text-xs md:text-sm text-purple-600 mt-2">
+                    Format: .xlsx, .xls, atau .csv. Template: NO, NAMA, EMAIL, GURU WALI
+                  </p>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -471,7 +520,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
             <i class="fas fa-file-excel text-green-600 text-sm md:text-base"></i>
           </div>
           <div>
-            <h2 class="text-lg md:text-xl font-semibold text-gray-800">Hasil Import Data Siswa</h2>
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800" id="importModalTitle">Hasil Import Data</h2>
             <p class="text-xs md:text-sm text-gray-500" id="importSummaryText"></p>
           </div>
         </div>
@@ -494,10 +543,10 @@ $usersToShow = array_slice($users, $offset, $perPage);
                 <thead class="bg-green-100">
                   <tr>
                     <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800">No</th>
-                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800">Nama Siswa</th>
+                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800">Nama</th>
                     <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800 mobile-hidden md:table-cell">Email</th>
-                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800">Kelas</th>
-                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800">Password</th>
+                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800" id="dataColumn1">Kelas</th>
+                    <th class="py-2 md:py-3 px-2 md:px-4 text-left font-semibold text-green-800" id="dataColumn2">Password</th>
                   </tr>
                 </thead>
                 <tbody id="successTableBody" class="divide-y divide-green-200">
@@ -523,7 +572,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
         </div>
 
         <!-- Password Warning -->
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 md:p-4 mt-3 md:mt-4">
+        <div id="passwordWarning" class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 md:p-4 mt-3 md:mt-4">
           <div class="flex items-start gap-2 md:gap-3">
             <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 md:mt-1 text-sm"></i>
             <div>
@@ -590,6 +639,24 @@ $usersToShow = array_slice($users, $offset, $perPage);
       }
     });
 
+    // Fungsi untuk tab switching
+    function switchTab(tab) {
+      // Update tab buttons
+      document.getElementById('tabSiswa').classList.toggle('text-blue-600', tab === 'siswa');
+      document.getElementById('tabSiswa').classList.toggle('border-blue-600', tab === 'siswa');
+      document.getElementById('tabSiswa').classList.toggle('text-gray-500', tab !== 'siswa');
+      document.getElementById('tabSiswa').classList.toggle('border-transparent', tab !== 'siswa');
+      
+      document.getElementById('tabGuru').classList.toggle('text-blue-600', tab === 'guru');
+      document.getElementById('tabGuru').classList.toggle('border-blue-600', tab === 'guru');
+      document.getElementById('tabGuru').classList.toggle('text-gray-500', tab !== 'guru');
+      document.getElementById('tabGuru').classList.toggle('border-transparent', tab !== 'guru');
+
+      // Update tab content
+      document.getElementById('formSiswa').classList.toggle('hidden', tab !== 'siswa');
+      document.getElementById('formGuru').classList.toggle('hidden', tab !== 'guru');
+    }
+
     // Fungsi untuk modal
     function fetchUserAndOpenModal(id) {
       fetch(`?route=admin/users/edit&id=${id}`)
@@ -605,32 +672,38 @@ $usersToShow = array_slice($users, $offset, $perPage);
 
     function openEditUserModal(user) {
       const modal = document.getElementById('edit-user-modal');
-      const peranInput = document.getElementById('edit-peran');
-      const waliKelasInput = document.getElementById('edit-wali-kelas').parentElement;
-      const kelasInput = document.getElementById('edit-kelas').parentElement;
+      const peranSelect = document.getElementById('edit-peran');
+      const waliKelasSelect = document.getElementById('edit-wali-kelas');
+      const kelasSelect = document.getElementById('edit-kelas');
+      const waliKelasContainer = waliKelasSelect.parentElement;
+      const kelasContainer = kelasSelect.parentElement;
 
+      // Set field
       document.getElementById('edit-user-id').value = user.id_user;
       document.getElementById('edit-nama-lengkap').value = user.nama_lengkap;
       document.getElementById('edit-email').value = user.email;
-      peranInput.value = user.peran;
-      document.getElementById('edit-wali-kelas').value = user.wali_kelas || '';
-      document.getElementById('edit-kelas').value = user.kelas || '';
+      peranSelect.value = user.peran;
+      waliKelasSelect.value = user.wali_kelas || '';
+      kelasSelect.value = user.kelas || '';
       document.getElementById('edit-nip-nis').value = user.nip_nis || '';
 
+      // Toggle visibility sesuai peran
       function toggleInputs() {
-        if (peranInput.value === 'siswa') {
-          waliKelasInput.classList.add('hidden');
-          kelasInput.classList.remove('hidden');
-        } else if (peranInput.value === 'guru') {
-          kelasInput.classList.add('hidden');
-          waliKelasInput.classList.remove('hidden');
+        if (peranSelect.value === 'siswa') {
+          waliKelasContainer.classList.add('hidden');
+          kelasContainer.classList.remove('hidden');
+        } else if (peranSelect.value === 'guru') {
+          kelasContainer.classList.add('hidden');
+          waliKelasContainer.classList.remove('hidden');
         } else {
-          kelasInput.classList.remove('hidden');
-          waliKelasInput.classList.remove('hidden');
+          kelasContainer.classList.remove('hidden');
+          waliKelasContainer.classList.remove('hidden');
         }
       }
+
       toggleInputs();
-      peranInput.addEventListener('change', toggleInputs);
+      peranSelect.addEventListener('change', toggleInputs);
+
       modal.classList.remove('hidden');
     }
 
@@ -732,7 +805,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
       
       document.body.appendChild(notification);
       
-      // Auto remove setelah 5 detik
+      // Auto remove setelah 20 detik
       setTimeout(() => {
         if (notification.parentElement) {
           notification.classList.add('fade-out');
@@ -741,7 +814,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
       }, 5000);
     }
 
-    // Handle form import submission dengan AJAX
+    // Handle form import siswa submission dengan AJAX
     document.getElementById('importForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -762,12 +835,52 @@ $usersToShow = array_slice($users, $offset, $perPage);
         if (data.success) {
           showCustomNotification('✅ ' + data.message, 'success');
           if (data.data && data.data.results) {
-            // Tampilkan modal hasil import
-            showImportResultModal(data.data);
+            // Tampilkan modal hasil import - TIDAK auto close
+            showImportResultModal(data.data, 'siswa');
           }
-          setTimeout(() => {
-            location.reload(); // Refresh halaman setelah 2 detik
-          }, 5000);
+          // HAPUS setTimeout untuk auto reload - biarkan user yang memutuskan kapan mau close
+        } else {
+          showCustomNotification('❌ ' + data.message, 'error');
+          if (data.data && data.data.errors) {
+            console.error('Import errors:', data.data.errors);
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showCustomNotification('❌ Terjadi kesalahan saat import data.', 'error');
+      })
+      .finally(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      });
+    });
+
+    // Handle form import guru submission dengan AJAX
+    document.getElementById('importGuruForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      
+      // Loading state
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengimport...';
+      submitBtn.disabled = true;
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showCustomNotification('✅ ' + data.message, 'success');
+          if (data.data && data.data.results) {
+            // Tampilkan modal hasil import - TIDAK auto close
+            showImportResultModal(data.data, 'guru');
+          }
+          // HAPUS setTimeout untuk auto reload - biarkan user yang memutuskan kapan mau close
         } else {
           showCustomNotification('❌ ' + data.message, 'error');
           if (data.data && data.data.errors) {
@@ -786,7 +899,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
     });
 
     // Fungsi untuk menampilkan modal hasil import
-    function showImportResultModal(data) {
+    function showImportResultModal(data, type = 'siswa') {
       const modal = document.getElementById('importResultModal');
       const successSection = document.getElementById('successSection');
       const errorSection = document.getElementById('errorSection');
@@ -795,6 +908,23 @@ $usersToShow = array_slice($users, $offset, $perPage);
       const successCount = document.getElementById('successCount');
       const errorCount = document.getElementById('errorCount');
       const importSummaryText = document.getElementById('importSummaryText');
+      const importModalTitle = document.getElementById('importModalTitle');
+      const dataColumn1 = document.getElementById('dataColumn1');
+      const dataColumn2 = document.getElementById('dataColumn2');
+      const passwordWarning = document.getElementById('passwordWarning');
+
+      // Set judul modal berdasarkan jenis import
+      if (type === 'guru') {
+        importModalTitle.textContent = 'Hasil Import Data Guru';
+        dataColumn1.textContent = 'Wali Kelas';
+        dataColumn2.textContent = 'Password';
+        passwordWarning.classList.remove('hidden');
+      } else {
+        importModalTitle.textContent = 'Hasil Import Data Siswa';
+        dataColumn1.textContent = 'Kelas';
+        dataColumn2.textContent = 'Password';
+        passwordWarning.classList.remove('hidden');
+      }
 
       // Reset konten
       successTableBody.innerHTML = '';
@@ -803,16 +933,27 @@ $usersToShow = array_slice($users, $offset, $perPage);
       // Tampilkan data berhasil
       if (data.results && data.results.length > 0) {
         successCount.textContent = `${data.imported} data`;
-        data.results.forEach((siswa, index) => {
+        data.results.forEach((item, index) => {
           const row = document.createElement('tr');
           row.className = 'hover:bg-green-100 transition-colors';
-          row.innerHTML = `
-            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${index + 1}</td>
-            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-medium text-gray-800">${siswa.nama}</td>
-            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 mobile-hidden md:table-cell">${siswa.email}</td>
-            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${siswa.kelas}</td>
-            <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-red-600">${siswa.password}</td>
-          `;
+          
+          if (type === 'guru') {
+            row.innerHTML = `
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${index + 1}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-medium text-gray-800">${item.nama}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 mobile-hidden md:table-cell">${item.email}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${item.wali_kelas || '-'}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-red-600">${item.password}</td>
+            `;
+          } else {
+            row.innerHTML = `
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${index + 1}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-medium text-gray-800">${item.nama}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700 mobile-hidden md:table-cell">${item.email}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm text-gray-700">${item.kelas}</td>
+              <td class="py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-red-600">${item.password}</td>
+            `;
+          }
           successTableBody.appendChild(row);
         });
         successSection.classList.remove('hidden');
@@ -840,7 +981,7 @@ $usersToShow = array_slice($users, $offset, $perPage);
       // Set summary text
       importSummaryText.textContent = `Total: ${data.imported} berhasil, ${data.skipped} dilewati`;
 
-      // Tampilkan modal
+      // Tampilkan modal - TIDAK ada auto close
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
@@ -850,6 +991,9 @@ $usersToShow = array_slice($users, $offset, $perPage);
       const modal = document.getElementById('importResultModal');
       modal.classList.add('hidden');
       document.body.style.overflow = 'auto';
+      
+      // Refresh halaman setelah modal ditutup
+      location.reload();
     }
 
     // Fungsi untuk download daftar password
@@ -862,7 +1006,10 @@ $usersToShow = array_slice($users, $offset, $perPage);
         return;
       }
 
-      let csvContent = 'No,Nama Lengkap,Email,Kelas,Password\n';
+      const modalTitle = document.getElementById('importModalTitle').textContent;
+      const isGuru = modalTitle.includes('Guru');
+      
+      let csvContent = isGuru ? 'No,Nama Lengkap,Email,Wali Kelas,Password\n' : 'No,Nama Lengkap,Email,Kelas,Password\n';
       
       rows.forEach((row, index) => {
         const cells = row.querySelectorAll('td');
@@ -880,8 +1027,12 @@ $usersToShow = array_slice($users, $offset, $perPage);
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       
+      const fileName = isGuru ? 
+        `daftar_password_guru_${new Date().toISOString().split('T')[0]}.csv` :
+        `daftar_password_siswa_${new Date().toISOString().split('T')[0]}.csv`;
+      
       link.setAttribute('href', url);
-      link.setAttribute('download', `daftar_password_siswa_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', fileName);
       link.style.visibility = 'hidden';
       
       document.body.appendChild(link);

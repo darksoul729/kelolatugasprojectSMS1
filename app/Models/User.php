@@ -234,6 +234,184 @@ class User {
 }
 
 
+public function importGuruFromExcel(string $filePath): array {
+    try {
+        // Baca file Excel
+        $spreadsheet = IOFactory::load($filePath);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray(null, true, true, true);
+
+        $imported = 0;
+        $skipped = 0;
+        $errors = [];
+        $results = [];
+
+        // Lewati header baris pertama
+        foreach (array_slice($rows, 1) as $rowNumber => $row) {
+            $no = trim($row['A'] ?? '');
+            $nama_lengkap = trim($row['B'] ?? '');
+            $email_input = trim($row['C'] ?? '');
+            $wali_kelas = trim($row['D'] ?? '');
+
+            // Validasi data wajib (nama dan email)
+            if (empty($nama_lengkap)) {
+                $skipped++;
+                $errors[] = "Baris " . ($rowNumber + 1) . ": Nama wajib diisi.";
+                continue;
+            }
+
+            // Format email - kirimkan juga nama_lengkap untuk handle email kosong
+            $email = $this->formatEmailGuru($email_input, $nama_lengkap);
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $skipped++;
+                $errors[] = "Baris " . ($rowNumber + 1) . ": Format email '$email' tidak valid.";
+                continue;
+            }
+
+            if ($this->isEmailExist($email)) {
+                $skipped++;
+                $errors[] = "Baris " . ($rowNumber + 1) . ": Email '$email' sudah terdaftar.";
+                continue;
+            }
+
+            // Tentukan peran berdasarkan data
+            $peran = $this->tentukanPeranGuru($wali_kelas, $nama_lengkap);
+            
+            // Generate password default
+            $password_default = $this->generatePasswordGuru($nama_lengkap);
+
+            // Insert data guru
+            $stmt = $this->pdo->prepare("
+                INSERT INTO {$this->table} 
+                (nama_lengkap, email, password_hash, peran, wali_kelas)
+                VALUES (:nama_lengkap, :email, :password_hash, :peran, :wali_kelas)
+            ");
+            
+            $result = $stmt->execute([
+                ':nama_lengkap' => $nama_lengkap,
+                ':email' => $email,
+                ':password_hash' => password_hash($password_default, PASSWORD_DEFAULT),
+                ':peran' => $peran,
+                ':wali_kelas' => $wali_kelas
+            ]);
+
+            if ($result) {
+                $imported++;
+                $results[] = [
+                    'nama' => $nama_lengkap,
+                    'email' => $email,
+                    'password' => $password_default,
+                    'peran' => $peran,
+                    'wali_kelas' => $wali_kelas
+                ];
+            } else {
+                $skipped++;
+                $errorInfo = $stmt->errorInfo();
+                $errors[] = "Baris " . ($rowNumber + 1) . ": Gagal menyimpan. Error: " . $errorInfo[2];
+            }
+        }
+
+        return [
+            'success' => true,
+            'message' => "Import guru selesai. Berhasil: {$imported}, dilewati: {$skipped}.",
+            'imported' => $imported,
+            'skipped' => $skipped,
+            'errors' => $errors,
+            'results' => $results
+        ];
+
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => 'Gagal membaca file Excel: ' . $e->getMessage(),
+            'imported' => 0,
+            'skipped' => 0,
+            'errors' => [],
+            'results' => []
+        ];
+    }
+}
+
+/**
+ * Format email guru - handle berbagai format
+ */
+/**
+ * Format email guru - handle berbagai format
+ */
+private function formatEmailGuru(string $email, string $nama_lengkap = ''): string {
+    $email = trim($email);
+    
+    // Jika email kosong, generate dari nama
+    if (empty($email)) {
+        return $this->generateEmailFromName($nama_lengkap);
+    }
+    
+    // Jika email dimulai dengan @, tambahkan domain default
+    if (strpos($email, '@') === 0) {
+        return substr($email, 1) . '@guru.smp.belajar.id';
+    }
+    
+    // Jika tidak ada @ sama sekali, tambahkan domain default
+    if (strpos($email, '@') === false) {
+        return $email . '@guru.smp.belajar.id';
+    }
+    
+    // Email sudah valid
+    return $email;
+}
+/**
+ * Tentukan peran guru berdasarkan wali kelas dan nama
+ */
+private function tentukanPeranGuru(string $wali_kelas, string $nama_lengkap): string {
+    $wali_kelas = strtoupper(trim($wali_kelas));
+    $nama_lengkap = strtoupper(trim($nama_lengkap));
+    
+    // Semua guru, termasuk kepala sekolah atau TU, tetap 'guru'
+    return 'guru';
+}
+
+
+/**
+ * Generate password untuk guru (6 digit random)
+ */
+private function generatePasswordGuru(string $nama_lengkap): string {
+    // Ambil inisial dari nama (2-3 karakter pertama dari setiap kata)
+    $words = explode(' ', trim($nama_lengkap));
+    $initials = '';
+    
+    foreach ($words as $word) {
+        if (!empty(trim($word))) {
+            $initials .= strtoupper(substr(trim($word), 0, 1));
+        }
+    }
+    
+    // Batasi maksimal 3 inisial
+    $initials = substr($initials, 0, 3);
+    
+    // Tambahkan angka random 3 digit
+    $randomNumber = str_pad(mt_rand(0, 999), 3, '0', STR_PAD_LEFT);
+    
+    return $initials . $randomNumber;
+}
+
+/**
+ * Generate email dari nama jika email kosong
+ */
+private function generateEmailFromName(string $nama_lengkap): string {
+    $nama = preg_replace('/[^a-zA-Z0-9]/', '', $nama_lengkap);
+    $nama = strtolower($nama);
+    $randomNumber = mt_rand(100, 999);
+    
+    return $nama . $randomNumber . '@guru.smp.belajar.id';
+}
+
+/**
+ * Cek apakah email sudah terdaftar (gunakan method yang sama dengan siswa)
+ */
+
+
+
     public function editUser($id_user, $data) {
         if (empty($id_user) || !is_numeric($id_user)) {
             return ['success' => false, 'message' => 'ID pengguna tidak valid.'];

@@ -94,6 +94,132 @@ class AdminController {
         exit;
     }
 
+
+    /**
+ * 📥 Import Guru dari Excel
+ */
+public function importGuru()
+{
+    header('Content-Type: application/json');
+    $filePath = null; // biar tetap dikenali di finally
+
+    try {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception('Metode tidak diizinkan.', 405);
+        }
+
+        if (!isset($_FILES['excel_file']) || $_FILES['excel_file']['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('File tidak ditemukan atau gagal diunggah.', 400);
+        }
+
+        $allowedExtensions = ['xls', 'xlsx'];
+        $fileName = $_FILES['excel_file']['name'];
+        $fileTmp  = $_FILES['excel_file']['tmp_name'];
+        $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (!in_array($fileExt, $allowedExtensions)) {
+            throw new Exception('Format file tidak valid. Hanya mendukung .xls atau .xlsx.', 400);
+        }
+
+        // Simpan file sementara
+        $uploadDir = __DIR__ . '/../../storage/tmp/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+        $filePath = $uploadDir . uniqid('import_guru_') . '.' . $fileExt;
+
+        if (!move_uploaded_file($fileTmp, $filePath)) {
+            throw new Exception('Gagal memindahkan file upload.', 500);
+        }
+
+        // Proses import guru
+        $result = $this->userModel->importGuruFromExcel($filePath);
+
+        // Kirim hasil JSON
+        echo json_encode([
+            'success' => $result['success'],
+            'message' => $result['message'],
+            'data' => [
+                'imported' => $result['imported'] ?? 0,
+                'skipped'  => $result['skipped'] ?? 0,
+                'errors'   => $result['errors'] ?? [],
+                'results'  => $result['results'] ?? []
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        http_response_code($e->getCode() ?: 500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ]);
+
+    } finally {
+        // 🔥 Hapus file apapun hasilnya (sukses/gagal/error)
+        if ($filePath && file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+}
+
+/**
+ * 📋 Download Template Excel untuk Guru
+ */
+public function downloadTemplateGuru() {
+    // Header untuk file Excel
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="template_import_guru.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Set header untuk template guru
+    $sheet->setCellValue('A1', 'NO');
+    $sheet->setCellValue('B1', 'NAMA');
+    $sheet->setCellValue('C1', 'EMAIL');
+    $sheet->setCellValue('D1', 'GURU WALI');
+
+    // Set contoh data guru
+    $sheet->setCellValue('A2', '1');
+    $sheet->setCellValue('B2', 'AGUS SUPRAPTO');
+    $sheet->setCellValue('C2', 'agussuprapto80@guru.smp.belajar.id');
+    $sheet->setCellValue('D2', 'IX A');
+
+    $sheet->setCellValue('A3', '2');
+    $sheet->setCellValue('B3', 'MUHAMMAD REAN WAHYUDI');
+    $sheet->setCellValue('C3', 'muhammadwahyudi891@guru.smp.belajar.id');
+    $sheet->setCellValue('D3', 'IX B');
+
+    $sheet->setCellValue('A4', '3');
+    $sheet->setCellValue('B4', 'SISWANTO');
+    $sheet->setCellValue('C4', 'siswanto35@admin.smp.belajar.id');
+    $sheet->setCellValue('D4', 'KEPALA SEKOLAH');
+
+    $sheet->setCellValue('A5', '4');
+    $sheet->setCellValue('B5', 'LILY');
+    $sheet->setCellValue('C5', '');
+    $sheet->setCellValue('D5', 'TU');
+
+    // Style header
+    $headerStyle = [
+        'font' => ['bold' => true],
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'startColor' => ['rgb' => 'E6F7FF']
+        ]
+    ];
+    $sheet->getStyle('A1:D1')->applyFromArray($headerStyle);
+
+    // Auto size columns
+    foreach (range('A', 'D') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+    $writer->save('php://output');
+    exit;
+}
+
     /**
      * 🟢 Update user (submit dari modal)
      */

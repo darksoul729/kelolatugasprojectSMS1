@@ -41,16 +41,31 @@
           <option value="7 B">7 B</option>
           <option value="7 C">7 C</option>
           <option value="7 D">7 D</option>
+          <option value="7 E">7 E</option>
+          <option value="7 F">7 F</option>
+          <option value="7 G">7 G</option>
+          <option value="7 H">7 H</option>
+          <option value="7 I">7 I</option>
+          <option value="7 J">7 J</option>
           <!-- Kelas 8 -->
           <option value="8 A">8 A</option>
           <option value="8 B">8 B</option>
           <option value="8 C">8 C</option>
           <option value="8 D">8 D</option>
+          <option value="8 E">8 E</option>
+          <option value="8 F">8 F</option>
+          <option value="8 G">8 G</option>
+          <option value="8 H">8 H</option>
+          <option value="8 I">8 I</option>
           <!-- Kelas 9 -->
           <option value="9 A">9 A</option>
           <option value="9 B">9 B</option>
           <option value="9 C">9 C</option>
           <option value="9 D">9 D</option>
+          <option value="9 E">9 E</option>
+          <option value="9 F">9 F</option>
+          <option value="9 G">9 G</option>
+          <option value="9 H">9 H</option>
         </select>
       </div>
 
@@ -60,20 +75,33 @@
         <select name="kelas" id="edit-kelas"
                 class="mt-1 block w-full border rounded-md px-3 py-2">
           <option value="">-- Pilih Kelas --</option>
-          <option value="7 A">7 A</option><option value="7 B">7 B</option>
-          <option value="7 C">7 C</option><option value="7 D">7 D</option>
-          <option value="7 E">7 E</option><option value="7 F">7 F</option>
-          <option value="7 G">7 G</option><option value="7 H">7 H</option>
-          <option value="7 I">7 I</option><option value="7 J">7 J</option>
-          <option value="8 A">8 A</option><option value="8 B">8 B</option>
-          <option value="8 C">8 C</option><option value="8 D">8 D</option>
-          <option value="8 E">8 E</option><option value="8 F">8 F</option>
-          <option value="8 G">8 G</option><option value="8 H">8 H</option>
+          <option value="7 A">7 A</option>
+          <option value="7 B">7 B</option>
+          <option value="7 C">7 C</option>
+          <option value="7 D">7 D</option>
+          <option value="7 E">7 E</option>
+          <option value="7 F">7 F</option>
+          <option value="7 G">7 G</option>
+          <option value="7 H">7 H</option>
+          <option value="7 I">7 I</option>
+          <option value="7 J">7 J</option>
+          <option value="8 A">8 A</option>
+          <option value="8 B">8 B</option>
+          <option value="8 C">8 C</option>
+          <option value="8 D">8 D</option>
+          <option value="8 E">8 E</option>
+          <option value="8 F">8 F</option>
+          <option value="8 G">8 G</option>
+          <option value="8 H">8 H</option>
           <option value="8 I">8 I</option>
-          <option value="9 A">9 A</option><option value="9 B">9 B</option>
-          <option value="9 C">9 C</option><option value="9 D">9 D</option>
-          <option value="9 E">9 E</option><option value="9 F">9 F</option>
-          <option value="9 G">9 G</option><option value="9 H">9 H</option>
+          <option value="9 A">9 A</option>
+          <option value="9 B">9 B</option>
+          <option value="9 C">9 C</option>
+          <option value="9 D">9 D</option>
+          <option value="9 E">9 E</option>
+          <option value="9 F">9 F</option>
+          <option value="9 G">9 G</option>
+          <option value="9 H">9 H</option>
         </select>
       </div>
 

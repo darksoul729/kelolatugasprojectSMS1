@@ -113,6 +113,16 @@ switch ($route) {
             $userCtrl->importSiswa(); // ✅ PERBAIKAN: method yang benar
         }
         break;
+    case 'admin/users/import-guru':
+        $authCtrl->requireRole('admin');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userCtrl->importGuru(); // ✅ PERBAIKAN: method yang benar
+        }
+        break;
+    case 'admin/users/download_guru_template':
+        $authCtrl->requireRole('admin');
+        $userCtrl->downloadTemplateGuru();
+        break;
 
     case 'admin/users/download_template':
         $authCtrl->requireRole('admin');
