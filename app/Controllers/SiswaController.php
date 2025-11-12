@@ -16,6 +16,27 @@ class SiswaController {
         $this->userModel = new User($pdo);
     }
 
+
+
+   public function index() {
+    if (!isset($_SESSION['user'])) {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Silakan login terlebih dahulu.'];
+        header("Location: ?route=auth/login");
+        exit;
+    }
+
+    $user = $_SESSION['user'];
+
+    if ($user['peran'] !== 'siswa') {
+        $_SESSION['message'] = ['type' => 'danger', 'text' => 'Hanya siswa yang dapat mengakses halaman ini.'];
+        header("Location: ?route=home");
+        exit;
+    }
+
+
+    include $this->basePath . '/resources/views/murid/dashboard_murid.php';
+}
+
 // Ambil siswa sesuai kelas wali guru
     public function getSiswaKelas($kelas) {
         return $this->userModel->getSiswaByKelas($kelas);

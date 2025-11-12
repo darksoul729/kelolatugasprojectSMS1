@@ -11,9 +11,10 @@ $hariIndo = [
     'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu',
 ];
 
+// Pastikan $bulan dan $tahun sudah di-set sebelumnya
 $namaBulanInggris = date('F', mktime(0, 0, 0, $bulan, 10));
 $namaBulan = $bulanIndo[$namaBulanInggris] ?? $namaBulanInggris;
-$jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+$jumlahHari = date('t', strtotime("$tahun-$bulan-01")); // alternatif aman
 
 $semuaTanggal = [];
 for ($i = 1; $i <= $jumlahHari; $i++) {

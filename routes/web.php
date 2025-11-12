@@ -11,35 +11,18 @@ require_once $basePath . '/includes/session_check.php';
 
 // === MODELS ===
 require_once $basePath . '/app/Models/User.php';
-require_once $basePath . '/app/Models/Tugas.php';
-require_once $basePath . '/app/Models/KategoriTugas.php';
-require_once $basePath . '/app/Models/PengumpulanTugas.php';
-require_once $basePath . '/app/Models/Penilaian.php';
 require_once $basePath . '/app/Models/AnakKebiasaan.php';
 
 // === CONTROLLERS ===
 require_once $basePath . '/app/Controllers/AuthController.php';
 require_once $basePath . '/app/Controllers/AdminController.php';
-require_once $basePath . '/app/Controllers/TugasController.php';
-require_once $basePath . '/app/Controllers/TugasMuridController.php';
-require_once $basePath . '/app/Controllers/PengumpulanController.php';
-require_once $basePath . '/app/Controllers/PenilaianController.php';
 require_once $basePath . '/app/Controllers/AnakKebiasaanController.php';
 require_once $basePath . '/app/Controllers/SiswaController.php';
 require_once $basePath . '/app/Controllers/LandingController.php';
+require_once $basePath . '/app/Controllers/GuruController.php';
 
-// === FILE STATIC (upload) ===
-$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (preg_match('#^/uploads/#', $requestUri)) {
-    $filePath = $basePath . '/public' . $requestUri;
-    if (file_exists($filePath)) {
-        return readfile($filePath);
-    } else {
-        http_response_code(404);
-        echo "File tidak ditemukan.";
-        exit;
-    }
-}
+
+
 
 // === HELPER ===
 function safeGetRoute(): string {
@@ -56,13 +39,11 @@ function redirectTo(string $route) {
 $route           = safeGetRoute();
 $authCtrl        = new AuthController($pdo);
 $userCtrl        = new AdminController($pdo);
-$tugasGuruCtrl   = new TugasController($pdo);
-$tugasSiswaCtrl  = new TugasMuridController($pdo);
-$kumpulCtrl      = new PengumpulanController($pdo);
-$nilaiCtrl       = new PenilaianController($pdo);
 $kebiasaanCtrl   = new AnakKebiasaanController($pdo);
 $siswaCtrl       = new SiswaController($pdo);
 $landingCtrl     = new LandingController($pdo);
+$guruCtrl        = new GuruController($pdo);
+$dashboardSiswa  = new SiswaController($pdo);
 
 // === BLOKIR LOGIN / REGISTER UNTUK YANG SUDAH LOGIN ===
 if (isset($_SESSION['user'])) {
@@ -175,52 +156,10 @@ switch ($route) {
 
     // GURU PANEL
     case 'guru/dashboard':
-    case 'guru/tugas':
         $authCtrl->requireRole('guru');
-        $tugasGuruCtrl->index();
+        $guruCtrl->index();
         break;
-
-    case 'guru/tugas/tambah':
-        $authCtrl->requireRole('guru');
-        $tugasGuruCtrl->create();
-        break;
-
-    case 'guru/tugas/detail':
-        $authCtrl->requireRole('guru');
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id ? $tugasGuruCtrl->show($id) : redirectTo('guru/tugas');
-        break;
-
-    case 'guru/tugas/edit':
-        $authCtrl->requireRole('guru');
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id ? $tugasGuruCtrl->editForm($id) : redirectTo('guru/tugas');
-        break;
-
-    case 'guru/tugas/update':
-        $authCtrl->requireRole('guru');
-        $id = $_GET['id'] ?? null;
-        $tugasGuruCtrl->update($id);
-        break;
-
-    case 'guru/tugas/delete':
-        $authCtrl->requireRole('guru');
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id ? $tugasGuruCtrl->delete($id) : redirectTo('guru/tugas');
-        break;
-
-    case 'guru/pengumpulan':
-        $authCtrl->requireRole('guru');
-        include $basePath . '/resources/views/guru/list_pengumpulan.php';
-        break;
-
-    case 'guru/penilaian':
-        $authCtrl->requireRole('guru');
-        $id_pengumpulan = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id_pengumpulan
-            ? $nilaiCtrl->nilai($id_pengumpulan)
-            : redirectTo('guru/pengumpulan');
-        break;
+     
 
     case 'guru/kebiasaan/ringkasan-json':
         $authCtrl->requireRole('guru');
@@ -243,11 +182,10 @@ switch ($route) {
 
     // MURID PANEL
     case 'murid/dashboard':
-    case 'murid/tugas':
         $authCtrl->requireRole('siswa');
-        $tugasSiswaCtrl->index();
+        $dashboardSiswa->index();
         break;
-
+    
     case 'murid/rekap':
         $authCtrl->requireRole('siswa');
         $kebiasaanCtrl->rekapBulanan();
@@ -258,17 +196,7 @@ switch ($route) {
         $kebiasaanCtrl->getDetailByDate();
         break;
 
-    case 'murid/tugas/detail':
-        $authCtrl->requireRole('siswa');
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id ? $tugasSiswaCtrl->show($id) : redirectTo('murid/tugas');
-        break;
-
-    case 'murid/kumpul':
-        $authCtrl->requireRole('siswa');
-        $id_tugas = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $id_tugas ? $kumpulCtrl->submit($id_tugas) : redirectTo('murid/tugas');
-        break;
+  
 
     case 'murid/kebiasaan/tambah':
         $authCtrl->requireRole('siswa');
